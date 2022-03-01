@@ -21,7 +21,7 @@ class InstanceGenerator:
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
 
-    def generate(self, name, plot, path = "data/"):
+    def generateInstance(self, name, plot, path = "data/"):
         candidate_locations = []
         deployed_macros = []
         user_locations = []
@@ -93,7 +93,7 @@ class InstanceGenerator:
 
 if __name__ == "__main__":
     gen = InstanceGenerator(300, 300, 4000, 200)
-    gen.generate("DS1", plot=True)
+    gen.generateInstance("DS1", plot=True)
 
 
     
