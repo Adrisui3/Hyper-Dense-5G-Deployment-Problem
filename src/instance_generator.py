@@ -1,6 +1,8 @@
 import random
 import numpy as np
+import math
 
+# Instance generator for the Hyper-Dense Deployment Problem.
 
 class InstanceGenerator:
     
@@ -19,8 +21,9 @@ class InstanceGenerator:
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
 
-    def generate(self, name, path = "data/"):
+    def generate(self, name, plot, path = "data/"):
         candidate_locations = []
+        deployed_macros = []
         user_locations = []
         
         # Actual locations of the users and/or candidates is not relevant
@@ -30,11 +33,11 @@ class InstanceGenerator:
 
         with open(path + name, "w") as f:
             print("# Site size (km)", file = f)
-            print(self.length, " ", self.width, file = f)
+            print(self.length, self.width, file = f)
             
             print("# Number of cells", file = f)
             print(len(self.cells), file = f)
-            
+
             print("# For every kind of cell: id, cost, range, power", file = f)
             for cell in self.cells:
                 print(' '.join(map(str, cell)), file = f)
@@ -68,11 +71,29 @@ class InstanceGenerator:
                     dmatrix_candidates[i].append(dist)
                 print(' '.join(map(str, dmatrix_candidates[i])), file = f)
 
+            # Random deployment of macrocells emulating a 4G network
+            # Between 5-10% of candidate locations will have a macrocell
+            perc = random.uniform(0.05, 0.10)
+            deployed_macros = random.sample(range(len(candidate_locations)), math.ceil(len(candidate_locations)*perc))
+            print("# Candidate locations' index where a macrocell is deployed", file = f)
+            print(' '.join(map(str, deployed_macros)), file = f)
+
+        # Set to true to produce further data aimed for visualization
+        if plot:
+            with open(path + name + "_coordinates", "w") as f:
+                print("# User's coordinates", file = f)
+                for i in range(self.nusers):
+                    print(user_locations[i][0], user_locations[i][1], file = f)
+                
+                print("# Candidate locations coordinates", file = f)
+                for j in range(self.ncandidates):
+                    print(candidate_locations[j][0], candidate_locations[j][1], file = f)
+
 
 
 if __name__ == "__main__":
-    gen = InstanceGenerator(100, 100, 10, 4)
-    gen.generate("test1")
+    gen = InstanceGenerator(300, 300, 4000, 200)
+    gen.generate("DS1", plot=True)
 
 
     
