@@ -21,7 +21,7 @@ class InstanceGenerator:
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
 
-    def generateInstance(self, name, plot, path = "data/"):
+    def generateInstance(self, file, visualization, path = "data/"):
         candidate_locations = []
         deployed_macros = []
         user_locations = []
@@ -31,7 +31,7 @@ class InstanceGenerator:
         # Distances between cells is necessary to grant feasibility
         dmatrix_candidates = [[] for _ in range(self.ncandidates)]
 
-        with open(path + name, "w") as f:
+        with open(path + file, "w") as f:
             print("# Site size (km)", file = f)
             print(self.length, self.width, file = f)
             
@@ -75,12 +75,12 @@ class InstanceGenerator:
             # Between 5-10% of candidate locations will have a macrocell
             perc = random.uniform(0.05, 0.10)
             deployed_macros = random.sample(range(len(candidate_locations)), math.ceil(len(candidate_locations)*perc))
-            print("# Candidate locations' index where a macrocell is deployed", file = f)
+            print("# Candidate locations' indices where macrocells are deployed", file = f)
             print(' '.join(map(str, deployed_macros)), file = f)
 
         # Set to true to produce further data aimed for visualization
-        if plot:
-            with open(path + name + "_coordinates", "w") as f:
+        if visualization:
+            with open(path + file + "_coordinates", "w") as f:
                 print("# User's coordinates", file = f)
                 for i in range(self.nusers):
                     print(user_locations[i][0], user_locations[i][1], file = f)
@@ -92,8 +92,12 @@ class InstanceGenerator:
 
 
 if __name__ == "__main__":
-    gen = InstanceGenerator(300, 300, 4000, 200)
-    gen.generateInstance("DS1", plot=True)
+    # Test instance
+    gen = InstanceGenerator(length = 100, width = 100, nusers = 10, ncandidates = 3)
+    gen.generateInstance(file = "DST", visualization = True)
 
+    # Big instance example
+    gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 300)
+    gen.generateInstance(file = "DS1", visualization = True)
 
     
