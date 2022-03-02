@@ -4,6 +4,8 @@ class Instance:
     def __init__(self):
         self.length = None
         self.width = None
+        
+        # id:[cost, range, power]
         self.cells = {}
         self.cells_ids = None
         self.nusers = None
