@@ -82,7 +82,7 @@ class Instance:
     def generateInitDeployment(self):
         # I assume maximum id corresponds to macrocells
         macro_id = max(self.cells_ids)
-        return [0 if i not in self.init_macrocells else macro_id for i in range(len(self.candidate_locations))]
+        return [0 if i not in self.init_macrocells else macro_id for i in range(self.ncandidates)]
 
 if __name__ == "__main__":
     ins = Instance()
