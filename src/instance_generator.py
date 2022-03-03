@@ -100,4 +100,13 @@ if __name__ == "__main__":
     gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 300)
     gen.generateInstance(file = "DS1", visualization = True)
 
+    # Big instance example 2
+    gen = InstanceGenerator(length = 300, width = 300, nusers = 3200, ncandidates = 150)
+    gen.generateInstance(file = "DS2", visualization = True)
+
+
+    # Medium instance example
+    gen = InstanceGenerator(length = 500, width = 500, nusers = 2000, ncandidates = 350)
+    gen.generateInstance(file = "DS3", visualization = True)
+
     

@@ -8,6 +8,7 @@ class Instance:
         # id:[cost, range, power]
         self.cells = {}
         self.cells_ids = None
+        self.macro_id = None
         self.nusers = None
         self.ncandidates = None
         self.dmatrix_users_candidates = None
@@ -37,6 +38,7 @@ class Instance:
                 line += 1
             
             self.cells_ids = list(self.cells.keys())
+            self.macro_id = max(self.cells_ids)
 
             # Distance matrices
             line += 1
@@ -82,9 +84,7 @@ class Instance:
                     line += 1
     
     def generateInitDeployment(self):
-        # I assume maximum id corresponds to macrocells
-        macro_id = max(self.cells_ids)
-        return [0 if i not in self.init_macrocells else macro_id for i in range(self.ncandidates)]
+        return [0 if i not in self.init_macrocells else self.macro_id for i in range(self.ncandidates)]
 
 if __name__ == "__main__":
     ins = Instance()
