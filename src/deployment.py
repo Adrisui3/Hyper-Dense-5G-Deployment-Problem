@@ -1,16 +1,25 @@
 from instance import Instance
+import copy
 
 
 class Deployment:
-    def __init__(self, instance, deployment = None):
+    def __init__(self, instance, wcost, wcoverage, winterferences, deployment = None):
         self.__instance = instance
         self.__deployment = deployment if deployment is not None else self.__instance.generateInitDeployment()
+        self.__wcost = wcost
+        self.__wcoverage = wcoverage
+        self.__winterferences = winterferences
+
+        # Compute maximum cost and maximum interferences
+        aux_dep = [self.__instance.macro_id]*self.__instance.ncandidates
+        self.__max_cost = self.__instance.cells[self.__instance.macro_id][0] * self.__instance.ncandidates
+        self.__max__interferences = self.__interferencesHelper(aux_dep, self.__coveredUsersHelper(aux_dep))
 
     def __getitem__(self, index):
         return self.__deployment[index]
     
-    def __setitem__(self, index):
-        return self.__deployment[index]
+    def __setitem__(self, index, item):
+        self.__deployment[index] = item
     
     def __delitem__(self, index):
         del self.__deployment[index]
@@ -20,23 +29,29 @@ class Deployment:
     
     def __str__(self):
         return str(self.__deployment)
+
+    def instance(self):
+        return self.__instance
     
-    def coveredUsers(self):        
+    def __coveredUsersHelper(self, deployment):
         covered_users = set()
         for i in range(self.__instance.nusers):
             user_dist = self.__instance.dmatrix_users_candidates[i]
             for j in range(self.__instance.ncandidates):
-                if self.__deployment[j] == 0:
+                if deployment[j] == 0:
                     continue
                 
                 # If covered, go for the next user
-                if user_dist[j] <= self.__instance.cells[self.__deployment[j]][1]:
+                if user_dist[j] <= self.__instance.cells[deployment[j]][1]:
                     covered_users.add(i)
                     break
 
         return covered_users
+    
+    def coveredUsers(self):        
+        return self.__coveredUsersHelper(self.__deployment)
 
-    def deploymentCost(self):
+    def cost(self):
         cost = 0
         for cell in self.__deployment:
             if cell == 0:
@@ -53,18 +68,17 @@ class Deployment:
         else:
             return nusers_covered / self.__instance.nusers
     
-    def interferences(self, cusers = None):
-        covered_users = self.coveredUsers() if cusers is None else cusers
+    def __interferencesHelper(self, deployment, cusers):
         interferences = 0
-        for user in covered_users:
+        for user in cusers:
             isum, pmax, dmax = 0, 0, 0
             for i in range(self.__instance.ncandidates):
-                if self.__deployment[i] == 0:
+                if deployment[i] == 0:
                     continue
                 
-                if self.__instance.dmatrix_users_candidates[user][i] <= self.__instance.cells[self.__deployment[i]][1]:
+                if self.__instance.dmatrix_users_candidates[user][i] <= self.__instance.cells[deployment[i]][1]:
                     dist = self.__instance.dmatrix_users_candidates[user][i]
-                    power = self.__instance.cells[self.__deployment[i]][2]
+                    power = self.__instance.cells[deployment[i]][2]
                     isum += power / pow(dist, 2)
                     
                     if power > pmax:
@@ -74,6 +88,10 @@ class Deployment:
             interferences += isum - pmax / pow(dmax, 2)
         
         return interferences
+
+    def interferences(self, cusers = None):
+        covered_users = self.coveredUsers() if cusers is None else cusers
+        return self.__interferencesHelper(self.__deployment, covered_users)
 
     def isFeasible(self):
         # Non-null cell indices for the __deployment array
@@ -100,36 +118,59 @@ class Deployment:
         
         # If all non-null cells are connected, the solution is feasible
         return all(connected_cells)
-            
-    def evaluate(self):
-        print("\nCost: ", self.deploymentCost())
+
+    # Python tuples are immutable, so they can be used as keys for dictionaries. 
+    # This can be helpful when implementing memoization/TABU search features
+    def exportDeployment(self):
+        return tuple(self.__deployment)   
+
+    def splitObjective(self):
+        covered_users = self.coveredUsers()
+
+        ncost = (self.__max_cost - self.cost()) / self.__max_cost
+        coverage = self.coverage(len(covered_users))
+        ninterferences = (self.__max__interferences - self.interferences(covered_users)) / self.__max__interferences if self.__max__interferences > 0 else 1
+
+        return (coverage, ncost, ninterferences)
+
+    def objective(self):
+        obj = self.splitObjective()
+        return self.__wcoverage * obj[0] + self.__wcost * obj[1] + self.__winterferences * obj[2]
+
+    def test(self):
+        print("\nCost: ", self.cost())
+        print("Max cost", self.__max_cost)
         print("Coverage: ", self.coverage())
         print("Interferences: ", self.interferences())
+        print("Max interferences: ", self.__max__interferences)
+        print("Objective: ", self.objective())
         print("Feasible: ", self.isFeasible())
 
     
 
 if __name__ == "__main__":
     ins = Instance()
-    ins.loadInstance(file = "DST", visualization = True)
-
-    sol = Deployment(instance = ins)
-    sol.evaluate()
-
-    ins = Instance()
     ins.loadInstance(file = "DS1", visualization = True)
 
-    sol = Deployment(instance = ins)
-    sol.evaluate()
+    sol = Deployment(instance = ins, wcost=1/3, wcoverage=1/3, winterferences=1/3)
+    sol.test()
 
+    '''
     ins = Instance()
     ins.loadInstance(file = "DS2", visualization = True)
 
     sol = Deployment(instance = ins)
-    sol.evaluate()
+    sol.test()
 
     ins = Instance()
     ins.loadInstance(file = "DS3", visualization = True)
 
     sol = Deployment(instance = ins)
-    sol.evaluate()
+    sol.test()
+
+    ins = Instance()
+    ins.loadInstance(file = "DS8", visualization = True)
+
+    sol = Deployment(instance = ins)
+    sol.test()
+    '''

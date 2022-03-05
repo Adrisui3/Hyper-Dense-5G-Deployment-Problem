@@ -92,21 +92,32 @@ class InstanceGenerator:
 
 
 if __name__ == "__main__":
-    # Test instance
-    gen = InstanceGenerator(length = 100, width = 100, nusers = 10, ncandidates = 3)
-    gen.generateInstance(file = "DST", visualization = True)
 
-    # Big instance example
-    gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 300)
+    # Small instances
+    gen = InstanceGenerator(length = 100, width = 100, nusers = 1000, ncandidates = 50)
     gen.generateInstance(file = "DS1", visualization = True)
 
-    # Big instance example 2
-    gen = InstanceGenerator(length = 300, width = 300, nusers = 3200, ncandidates = 150)
+    gen = InstanceGenerator(length = 100, width = 100, nusers = 1000, ncandidates = 100)
     gen.generateInstance(file = "DS2", visualization = True)
 
-
-    # Medium instance example
-    gen = InstanceGenerator(length = 500, width = 500, nusers = 2000, ncandidates = 350)
+    gen = InstanceGenerator(length = 100, width = 100, nusers = 2000, ncandidates = 100)
     gen.generateInstance(file = "DS3", visualization = True)
+
+    # Medium instances
+    gen = InstanceGenerator(length = 200, width = 200, nusers = 2000, ncandidates = 100)
+    gen.generateInstance(file = "DS4", visualization = True)
+
+    gen = InstanceGenerator(length = 200, width = 200, nusers = 2000, ncandidates = 200)
+    gen.generateInstance(file = "DS5", visualization = True)
+
+    gen = InstanceGenerator(length = 200, width = 200, nusers = 4000, ncandidates = 300)
+    gen.generateInstance(file = "DS6", visualization = True)
+    
+    # Big instances
+    gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 200)
+    gen.generateInstance(file = "DS7", visualization = True)
+    
+    gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 300)
+    gen.generateInstance(file = "DS8", visualization = True)
 
     
