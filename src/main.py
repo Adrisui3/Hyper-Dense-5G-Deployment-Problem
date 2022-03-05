@@ -49,7 +49,6 @@ if __name__ == "__main__":
         overall_sol = solutions[objectives.index(overall_obj)]
         split_res = list(map(np.mean, zip(*split_objectives)))
         results[ds] = [overall_sol, np.mean(objectives), np.std(objectives), split_res[0], split_res[1], split_res[2], np.mean(runtimes)]
-        break
 
     date = str(datetime.datetime.now())
     date = date.replace(" ", "--")
