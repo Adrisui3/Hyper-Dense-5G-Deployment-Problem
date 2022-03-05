@@ -110,7 +110,7 @@ if __name__ == "__main__":
     gen = InstanceGenerator(length = 200, width = 200, nusers = 2000, ncandidates = 200)
     gen.generateInstance(file = "DS5", visualization = True)
 
-    gen = InstanceGenerator(length = 200, width = 200, nusers = 4000, ncandidates = 300)
+    gen = InstanceGenerator(length = 200, width = 200, nusers = 4000, ncandidates = 200)
     gen.generateInstance(file = "DS6", visualization = True)
     
     # Big instances
