@@ -5,8 +5,7 @@ import random
 
 def upgradeCells(current_solution):
     # Given a solution, it will upgrade a cell to a bigger one if possible
-
-    neighbor = copy.deepcopy(current_solution)
+    neighbor = current_solution.copy()
     upgrade_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != current_solution.instance().macro_id]
 
     if upgrade_idx:
@@ -20,8 +19,7 @@ def upgradeCells(current_solution):
 
 def downgradeCells(current_solution):
     # Given a solution, it will downgrade a cell to a smaller one if possible
-
-    neighbor = copy.deepcopy(current_solution)
+    neighbor = current_solution.copy()
     downgrade_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != 0]
 
     if downgrade_idx:

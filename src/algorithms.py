@@ -4,8 +4,8 @@ from operators import *
 import random
 
 
-def localSearch(problem_instance, iter, wobjective = (1/3, 1/3, 1/3)):
-    current_solution = Deployment(instance = problem_instance, wcost = wobjective[0], wcoverage = wobjective[1], winterferences = wobjective[2])
+def localSearch(problem_instance, iter, wobjective = (1, 1, 1)):
+    current_solution = Deployment(instance = problem_instance, weights = wobjective)
     best_solution = current_solution
     best_objective = current_solution.objective()
     
@@ -27,11 +27,11 @@ def localSearch(problem_instance, iter, wobjective = (1/3, 1/3, 1/3)):
 
 if __name__ == "__main__":
     ins = Instance()
-    ins.loadInstance(file = "DS8", visualization = False)
+    ins.loadInstance(file = "DS1", visualization = False)
 
-    solution, objective = localSearch(ins, 2000)
+    solution, objective = localSearch(ins, 100)
 
-    debug = Deployment(ins)
+    debug = Deployment(instance = ins)
     print(" --- INITIAL SOLUTION DEBUG ---")
     debug.test()
     print(" --- BEST SOLUTION DEBUG --- ")

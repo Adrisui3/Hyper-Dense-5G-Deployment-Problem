@@ -16,6 +16,7 @@ if __name__ == "__main__":
 
     print("Datasets available: ", datasets)
     nruns = int(input("Number of runs: "))
+    notes = input("Notes: ")
 
     results = {}
 
@@ -30,8 +31,7 @@ if __name__ == "__main__":
         solutions = []
 
         for i in range(nruns):
-            print("     Run number ", i, "...")
-            
+
             tini = time.time()
             best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER)
             tend = time.time()
@@ -44,6 +44,8 @@ if __name__ == "__main__":
             objectives.append(best_objective)
             split_objectives.append(best_solution.splitObjective())
             runtimes.append(tend - tini)
+
+            print("     Iteration number:", i, "-", "Runtime:", tend - tini, "seconds")
         
         overall_obj = min(objectives)
         overall_sol = solutions[objectives.index(overall_obj)]
@@ -55,6 +57,7 @@ if __name__ == "__main__":
     with open("results/" + date, "w") as f:
         print(" --- RESULTS --- ", file = f)
         print("Runs per dataset: ", nruns, file = f)
+        print("Notes: ", notes, "\n", file = f)
 
         for ds in datasets:
             print(ds, ":", [results[ds][i] for i in range(len(results[ds])) if i > 0], file = f)

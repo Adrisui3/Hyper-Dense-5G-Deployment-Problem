@@ -1,19 +1,23 @@
 from instance import Instance
 import copy
+import os
 
 
 class Deployment:
-    def __init__(self, instance, wcost, wcoverage, winterferences, deployment = None):
+    def __init__(self, instance, max_cost = None, max_interferences = None, weights = (1, 1, 1), deployment = None):
         self.__instance = instance
         self.__deployment = deployment if deployment is not None else self.__instance.generateInitDeployment()
-        self.__wcost = wcost
-        self.__wcoverage = wcoverage
-        self.__winterferences = winterferences
+        self.__wcoverage = weights[0]        
+        self.__wcost = weights[1]
+        self.__winterferences = weights[2]
 
         # Compute maximum cost and maximum interferences
-        aux_dep = [self.__instance.macro_id]*self.__instance.ncandidates
-        self.__max_cost = self.__instance.cells[self.__instance.macro_id][0] * self.__instance.ncandidates
-        self.__max__interferences = self.__interferencesHelper(aux_dep, self.__coveredUsersHelper(aux_dep))
+        self.__max_cost = self.__instance.cells[self.__instance.macro_id][0] * self.__instance.ncandidates if max_cost is None else max_cost
+        if max_interferences is None:
+            aux_dep = [self.__instance.macro_id]*self.__instance.ncandidates
+            self.__max_interferences = self.__interferencesHelper(aux_dep, self.__coveredUsersHelper(aux_dep))
+        else:
+            self.__max_interferences = max_interferences
 
     def __getitem__(self, index):
         return self.__deployment[index]
@@ -48,6 +52,9 @@ class Deployment:
 
         return covered_users
     
+    def copy(self):
+        return Deployment(instance = self.__instance, max_cost = self.__max_cost, max_interferences = self.__max_interferences, weights = self.weights(), deployment = self.__deployment.copy())
+
     def coveredUsers(self):        
         return self.__coveredUsersHelper(self.__deployment)
 
@@ -119,58 +126,49 @@ class Deployment:
         # If all non-null cells are connected, the solution is feasible
         return all(connected_cells)
 
+    def weights(self):
+        return (self.__wcoverage, self.__wcost, self.__winterferences)
+
     # Python tuples are immutable, so they can be used as keys for dictionaries. 
     # This can be helpful when implementing memoization/TABU search features
-    def exportDeployment(self):
-        return tuple(self.__deployment)   
+    def deployment(self):
+        return self.__deployment
+    
+    def immutableDeployment(self):
+        return tuple(self.__deployment)
 
     def splitObjective(self):
         covered_users = self.coveredUsers()
-
-        ncost = (self.__max_cost - self.cost()) / self.__max_cost
-        coverage = self.coverage(len(covered_users))
-        ninterferences = (self.__max__interferences - self.interferences(covered_users)) / self.__max__interferences if self.__max__interferences > 0 else 1
-
-        return (coverage, ncost, ninterferences)
+        return (self.coverage(len(covered_users)), self.cost(), self.interferences(covered_users))
 
     def objective(self):
         obj = self.splitObjective()
-        return self.__wcoverage * obj[0] + self.__wcost * obj[1] + self.__winterferences * obj[2]
+        
+        ncost = (self.__max_cost - obj[1]) / self.__max_cost
+        ninterferences = (self.__max_interferences - obj[2]) / self.__max_interferences if self.__max_interferences > 0 else 1
+        
+        return self.__wcoverage * obj[0] + self.__wcost * ncost + self.__winterferences * ninterferences
 
     def test(self):
-        print("\nCost: ", self.cost())
+        print(" --- DEBUG ---")
+        print("Cost: ", self.cost())
         print("Max cost", self.__max_cost)
         print("Coverage: ", self.coverage())
         print("Interferences: ", self.interferences())
-        print("Max interferences: ", self.__max__interferences)
+        print("Max interferences: ", self.__max_interferences)
         print("Objective: ", self.objective())
         print("Feasible: ", self.isFeasible())
 
     
 
 if __name__ == "__main__":
-    ins = Instance()
-    ins.loadInstance(file = "DS1", visualization = True)
-
-    sol = Deployment(instance = ins, wcost=1/3, wcoverage=1/3, winterferences=1/3)
-    sol.test()
-
-    '''
-    ins = Instance()
-    ins.loadInstance(file = "DS2", visualization = True)
-
-    sol = Deployment(instance = ins)
-    sol.test()
-
-    ins = Instance()
-    ins.loadInstance(file = "DS3", visualization = True)
-
-    sol = Deployment(instance = ins)
-    sol.test()
-
-    ins = Instance()
-    ins.loadInstance(file = "DS8", visualization = True)
-
-    sol = Deployment(instance = ins)
-    sol.test()
-    '''
+    path_ds = "./data/"
+    ds_r = os.listdir(path_ds)
+    datasets = [name for name in ds_r if "_coordinates" not in name]
+    datasets.sort()
+    
+    for ds in datasets:
+        ins = Instance()
+        ins.loadInstance(file = ds, visualization = True)
+        sol = Deployment(instance = ins)
+        sol.test()
