@@ -32,6 +32,40 @@ def downgradeCells(current_solution):
     
     return neighbor
 
+def swapCells(current_solution):
+    # Given a solution, it will swap two random cells. It will ensure at least one of them is non-null
+    neighbor = current_solution.copy()
+    nnull_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != 0]
+    idxA = random.choice(nnull_idx)
+    all_idx = [i for i in range(current_solution.instance().ncandidates) if i != idxA]
+    idxB = random.choice(all_idx)
+
+    neighbor[idxA] = current_solution[idxB]
+    neighbor[idxB] = current_solution[idxA]
+
+    return neighbor
+
+def deployConnected(current_solution):
+    # Given a solution, it will insert a small cell in the boundaries of a deployed cell's range
+    neighbor = current_solution.copy()
+    nnull_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != 0]
+    null_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] == 0]
+    cells = current_solution.instance().cells_ids[1:]
+
+    for idx in nnull_idx:
+        cell_range = current_solution.instance().cells[current_solution[idx]][1]
+        cell_dist = current_solution.instance().dmatrix_candidates[idx]
+        
+        in_range = [n_idx for n_idx in null_idx if cell_dist[n_idx] <= cell_range]
+        if not in_range:
+            continue     
+        
+        in_range_d = [cell_dist[i] for i in in_range]
+        f_idx = in_range[in_range_d.index(max(in_range_d))]
+        neighbor[f_idx] = random.choice(cells)
+        break
+    
+    return neighbor
 
 
 if __name__ == "__main__":
@@ -39,5 +73,8 @@ if __name__ == "__main__":
     ins.loadInstance(file = "DS1", visualization = True)
 
     sol = Deployment(instance = ins)
+    print(sol)
     print(upgradeCells(sol))
     print(downgradeCells(sol))
+    print(swapCells(sol))
+    print(deployConnected(sol))

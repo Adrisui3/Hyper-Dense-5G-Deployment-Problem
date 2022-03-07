@@ -11,10 +11,14 @@ def localSearch(problem_instance, iter, wobjective = (1, 1, 1)):
     
     for i in range(iter):
         ran = random.uniform(0, 1)
-        if ran < 0.5:
+        if ran < 0.25:
             current_solution = upgradeCells(best_solution)
-        else:
+        elif ran < 0.5:
             current_solution = downgradeCells(best_solution)
+        elif ran < 0.75:
+            current_solution = swapCells(best_solution)
+        else:
+            current_solution = deployConnected(best_solution)
 
         if current_solution.isFeasible():
             current_objective = current_solution.objective()
