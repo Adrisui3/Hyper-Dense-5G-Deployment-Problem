@@ -78,7 +78,7 @@ class Deployment:
     def __interferencesHelper(self, deployment, cusers):
         interferences = 0
         for user in cusers:
-            isum, pmax, dmax = 0, 0, 0
+            isum, pmax, dmax = 0, 0, []
             for i in range(self.__instance.ncandidates):
                 if deployment[i] == 0:
                     continue
@@ -88,11 +88,15 @@ class Deployment:
                     power = self.__instance.cells[deployment[i]][2]
                     isum += power / pow(dist, 2)
                     
+                    # I assume pmax and dmax correspond to the closest most powerful cell whose signal reaches the user
                     if power > pmax:
                         pmax = power
-                        dmax = dist
+                        dmax = [dist]
+
+                    elif power == pmax:
+                        dmax.append(dist)
             
-            interferences += isum - pmax / pow(dmax, 2)
+            interferences += isum - pmax / pow(min(dmax), 2)
         
         return interferences
 
