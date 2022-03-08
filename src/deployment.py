@@ -39,12 +39,10 @@ class Deployment:
     
     def __coveredUsersHelper(self, deployment):
         covered_users = set()
+        nnull_idx = self.getNonNullCells()
         for i in range(self.__instance.nusers):
             user_dist = self.__instance.dmatrix_users_candidates[i]
-            for j in range(self.__instance.ncandidates):
-                if deployment[j] == 0:
-                    continue
-                
+            for j in nnull_idx:
                 # If covered, go for the next user
                 if user_dist[j] <= self.__instance.cells[deployment[j]][1]:
                     covered_users.add(i)
@@ -88,7 +86,7 @@ class Deployment:
                 if self.__instance.dmatrix_users_candidates[user][i] <= self.__instance.cells[deployment[i]][1]:
                     dist = self.__instance.dmatrix_users_candidates[user][i]
                     power = self.__instance.cells[deployment[i]][2]
-                    isum += power / pow(dist, 2)
+                    isum += power / dist**2
                     
                     # I assume pmax and dmax correspond to the closest most powerful cell whose signal reaches the user
                     if power > pmax:
@@ -98,7 +96,7 @@ class Deployment:
                     elif power == pmax:
                         dmax.append(dist)
             
-            interferences += isum - pmax / pow(min(dmax), 2)
+            interferences += isum - pmax / min(dmax)**2
         
         return interferences
 
