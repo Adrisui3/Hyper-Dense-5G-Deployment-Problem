@@ -9,7 +9,7 @@ def localSearch(problem_instance, iter, wobjective = (1, 1, 1)):
     best_solution = current_solution
     best_objective = current_solution.objective()
     
-    for i in range(iter):
+    for _ in range(iter):
         ran = random.uniform(0, 1)
         if ran < 0.25:
             current_solution = upgradeCells(best_solution)

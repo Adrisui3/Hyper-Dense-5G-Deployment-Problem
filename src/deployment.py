@@ -53,7 +53,9 @@ class Deployment:
         return covered_users
     
     def copy(self):
-        return Deployment(instance = self.__instance, max_cost = self.__max_cost, max_interferences = self.__max_interferences, weights = self.weights(), deployment = self.__deployment.copy())
+        return Deployment(instance = self.__instance, max_cost = self.__max_cost, 
+                          max_interferences = self.__max_interferences, weights = self.weights(), 
+                          deployment = self.__deployment.copy())
 
     def coveredUsers(self):        
         return self.__coveredUsersHelper(self.__deployment)
@@ -152,6 +154,9 @@ class Deployment:
         ninterferences = (self.__max_interferences - obj[2]) / self.__max_interferences if self.__max_interferences > 0 else 1
         
         return self.__wcoverage * obj[0] + self.__wcost * ncost + self.__winterferences * ninterferences
+    
+    def getNonNullCells(self):
+        return [i for i in range(self.__instance.ncandidates) if self.__deployment[i] != 0]
 
     def test(self):
         print(" --- DEBUG ---")

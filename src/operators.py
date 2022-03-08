@@ -20,7 +20,7 @@ def upgradeCells(current_solution):
 def downgradeCells(current_solution):
     # Given a solution, it will downgrade a cell to a smaller one if possible
     neighbor = current_solution.copy()
-    downgrade_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != 0]
+    downgrade_idx = current_solution.getNonNullCells()
 
     if downgrade_idx:
        idx = random.choice(downgrade_idx)
@@ -35,10 +35,8 @@ def downgradeCells(current_solution):
 def swapCells(current_solution):
     # Given a solution, it will swap two random cells. It will ensure at least one of them is non-null
     neighbor = current_solution.copy()
-    nnull_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != 0]
-    idxA = random.choice(nnull_idx)
-    all_idx = [i for i in range(current_solution.instance().ncandidates) if i != idxA]
-    idxB = random.choice(all_idx)
+    idxA = random.choice(current_solution.getNonNullCells())
+    idxB = random.choice([i for i in range(current_solution.instance().ncandidates) if i != idxA])
 
     neighbor[idxA] = current_solution[idxB]
     neighbor[idxB] = current_solution[idxA]

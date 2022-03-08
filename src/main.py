@@ -60,7 +60,7 @@ if __name__ == "__main__":
         print("Notes: ", notes, "\n", file = f)
 
         for ds in datasets:
-            print(ds, ":", [results[ds][i] for i in range(len(results[ds])) if i > 0], file = f)
+            print(ds, ":", results[ds][1:], file = f)
         
         print("\n--- BEST FOUND SOLUTIONS --- \n", file = f)
         for ds in datasets:
