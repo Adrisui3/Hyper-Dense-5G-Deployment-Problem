@@ -33,7 +33,7 @@ if __name__ == "__main__":
         for i in range(nruns):
 
             tini = time.time()
-            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, n_neighbors = 1)
+            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = [upgradeCells, downgradeCells])
             tend = time.time()
 
             if not best_solution.isFeasible() or best_solution.objective() != best_objective:

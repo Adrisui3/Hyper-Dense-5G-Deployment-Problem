@@ -4,22 +4,14 @@ from operators import *
 import random
 import numpy as np
 
-
-def localSearch(problem_instance, iter, wobjective = (1, 1, 1)):
+def localSearch(problem_instance, iter, oper, wobjective = (1, 1, 1)):
     current_solution = Deployment(instance = problem_instance, weights = wobjective)
     best_solution = current_solution
     best_objective = current_solution.objective()
     
     for _ in range(iter):
-        ran = random.uniform(0, 1)
-        if ran < 0.25:
-            current_solution = upgradeCells(best_solution)
-        elif ran < 0.5:
-            current_solution = downgradeCells(best_solution)
-        elif ran < 0.75:
-            current_solution = swapCells(best_solution)
-        else:
-            current_solution = deployConnected(best_solution)
+        # Randomly selected operator to be applied
+        current_solution = random.choices(oper, k = 1)[0](best_solution)
 
         if current_solution.isFeasible():
             current_objective = current_solution.objective()
@@ -30,7 +22,7 @@ def localSearch(problem_instance, iter, wobjective = (1, 1, 1)):
     return best_solution, best_objective
 
 # Values for initial and final temperature are found in the references
-def simulatedAnnealing(problem_instance, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealing(problem_instance, oper, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
     incumbent = Deployment(instance = problem_instance, weights = wobjective)
     best_solution = incumbent
     best_objective = best_solution.objective()
@@ -38,15 +30,8 @@ def simulatedAnnealing(problem_instance, n_neighbors = 1, T_ini = 100, T_end = 0
 
     while temp > T_end:
         for _ in range(n_neighbors):
-            ran = random.uniform(0, 1)
-            if ran < 0.25:
-                current_solution = upgradeCells(incumbent)
-            elif ran < 0.5:
-                current_solution = downgradeCells(incumbent)
-            elif ran < 0.75:
-                current_solution = swapCells(incumbent)
-            else:
-                current_solution = deployConnected(incumbent)
+            # Randomly selected operator to be applied
+            current_solution = random.choices(oper, k = 1)[0](incumbent)
             
             if current_solution.isFeasible():
                 current_objective = current_solution.objective()
@@ -61,10 +46,11 @@ def simulatedAnnealing(problem_instance, n_neighbors = 1, T_ini = 100, T_end = 0
                     incumbent = current_solution
         
         temp = temp * alpha
+        #print("Temperature:", temp)
     
     return best_solution, best_objective
 
-def simulatedAnnealingTABU(problem_instance, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealingTABU(problem_instance, oper, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective)
@@ -75,15 +61,8 @@ def simulatedAnnealingTABU(problem_instance, n_neighbors = 1, T_ini = 100, T_end
     feasible_solutions[best_solution.immutableDeployment()] = best_objective
     while temp > T_end:
         for _ in range(n_neighbors):
-            ran = random.uniform(0, 1)
-            if ran < 0.25:
-                current_solution = upgradeCells(incumbent)
-            elif ran < 0.5:
-                current_solution = downgradeCells(incumbent)
-            elif ran < 0.75:
-                current_solution = swapCells(incumbent)
-            else:
-                current_solution = deployConnected(incumbent)
+            # Randomly selected operator to be applied
+            current_solution = random.choices(oper, k = 1)[0](incumbent)
             
             if current_solution.immutableDeployment() in feasible_solutions:
                 feasible = True
@@ -110,16 +89,15 @@ def simulatedAnnealingTABU(problem_instance, n_neighbors = 1, T_ini = 100, T_end
                     infeasible_solutions.add(current_solution.immutableDeployment())
 
         temp = temp * alpha
-        #print("Temperature: ", temp)
+        print("Temperature: ", temp)
     
     return best_solution, best_objective
 
 if __name__ == "__main__":
     ins = Instance()
-    ins.loadInstance(file = "DS8", visualization = False)
+    ins.loadInstance(file = "DS1", visualization = False)
 
-    #solution, objective = localSearch(ins, 5000)
-    solution, objective = simulatedAnnealingTABU(problem_instance= ins, n_neighbors = 1)
+    solution, objective = simulatedAnnealingTABU(problem_instance = ins, oper = [upgradeCells, downgradeCells])
 
     debug = Deployment(instance = ins)
     print(" --- INITIAL SOLUTION DEBUG ---")
