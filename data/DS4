@@ -1,5 +1,5 @@
 # Site size (km)
-200 200
+200
 # Number of cells
 4
 # For every kind of cell: id, cost, range, power

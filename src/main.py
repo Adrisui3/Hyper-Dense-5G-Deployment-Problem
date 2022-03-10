@@ -8,7 +8,7 @@ import datetime
 
 if __name__ == "__main__":
     LSITER = 5000
-    ASITER = {"DS1":15000, "DS2":20000, "DS3":20000, "DS4":20000, "DS5": 25000, "DS6": 25000, "DS7": 25000, "DS8": 35000}
+    ASITER = {"DS1":15000, "DS2":15000, "DS3":15000, "DS4":15000, "DS5":15000, "DS6":15000, "DS7":15000, "DS8":15000}
     oper = [upgradeCells, downgradeCells, swapCells, deployConnected]
     init_deployment = False
     AS_SEGMMENT = 250
@@ -77,6 +77,3 @@ if __name__ == "__main__":
         print("\n--- BEST FOUND SOLUTIONS --- \n", file = f)
         for ds in datasets:
             print(ds, ":", results[ds][0], file = f)
-            
-
-

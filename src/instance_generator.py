@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import math
+from sklearn.datasets import make_blobs
 
 # Instance generator for the Hyper-Dense Deployment Problem.
 
@@ -11,9 +12,8 @@ class InstanceGenerator:
     cells = [[4, 175, 25, 50], [3, 25, 10, 10], [2, 5, 0.5, 1], [1, 1, 0.05, 0.25]]
 
     # If not specified, locations will be uniformly distributed over the AoI
-    def __init__(self, length, width, nusers, ncandidates, distrib = random.uniform):
-        self.length = length
-        self.width = width
+    def __init__(self, size, nusers, ncandidates, distrib = random.uniform):
+        self.size = size
         self.nusers = nusers
         self.ncandidates = ncandidates
         self.distrib = distrib
@@ -21,7 +21,18 @@ class InstanceGenerator:
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
 
-    def generateInstance(self, file, visualization, path = "data/"):
+    def __generateBlobs(self):
+        users_r, _ = make_blobs(n_samples = self.nusers, n_features = 2, cluster_std = 1.0, center_box=(0, self.size))
+        users = []
+
+        for user in users_r:
+            x = abs(user[0]) if user[0] <= self.size else self.size
+            y = abs(user[1]) if user[1] <= self.size else self.size
+            users.append((x, y))
+        
+        return users
+
+    def generateInstance(self, file, visualization, blobs = False, path = "data/"):
         candidate_locations = []
         deployed_macros = []
         user_locations = []
@@ -33,7 +44,7 @@ class InstanceGenerator:
 
         with open(path + file, "w") as f:
             print("# Site size (km)", file = f)
-            print(self.length, self.width, file = f)
+            print(self.size, self.size, file = f)
             
             print("# Number of cells", file = f)
             print(len(self.cells), file = f)
@@ -50,10 +61,10 @@ class InstanceGenerator:
 
             # Random generation of locations for both users and candidate points
             for i in range(self.nusers):
-                user_locations.append((self.distrib(0, self.length), self.distrib(0, self.width)))
+                user_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
             
             for i in range(self.ncandidates):
-                candidate_locations.append((self.distrib(0, self.length), self.distrib(0, self.width)))
+                candidate_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
             
             # nusers x ncandidates distance matrix
             print("# Distance matrix between users and candidate locations", file = f)
@@ -94,30 +105,34 @@ class InstanceGenerator:
 if __name__ == "__main__":
 
     # Small instances
-    gen = InstanceGenerator(length = 100, width = 100, nusers = 1000, ncandidates = 50)
+    gen = InstanceGenerator(size = 100, nusers = 1000, ncandidates = 50)
+    gen.generateBlobs()
+
+    '''
     gen.generateInstance(file = "DS1", visualization = True)
 
-    gen = InstanceGenerator(length = 100, width = 100, nusers = 1000, ncandidates = 100)
+    gen = InstanceGenerator(size = 100, nusers = 1000, ncandidates = 100)
     gen.generateInstance(file = "DS2", visualization = True)
 
-    gen = InstanceGenerator(length = 100, width = 100, nusers = 2000, ncandidates = 100)
+    gen = InstanceGenerator(size = 100, nusers = 2000, ncandidates = 100)
     gen.generateInstance(file = "DS3", visualization = True)
 
     # Medium instances
-    gen = InstanceGenerator(length = 200, width = 200, nusers = 2000, ncandidates = 100)
+    gen = InstanceGenerator(size = 200, nusers = 2000, ncandidates = 100)
     gen.generateInstance(file = "DS4", visualization = True)
 
-    gen = InstanceGenerator(length = 200, width = 200, nusers = 2000, ncandidates = 200)
+    gen = InstanceGenerator(size = 200, nusers = 2000, ncandidates = 200)
     gen.generateInstance(file = "DS5", visualization = True)
 
-    gen = InstanceGenerator(length = 200, width = 200, nusers = 4000, ncandidates = 200)
+    gen = InstanceGenerator(size = 200, nusers = 4000, ncandidates = 200)
     gen.generateInstance(file = "DS6", visualization = True)
     
     # Big instances
-    gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 200)
+    gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 200)
     gen.generateInstance(file = "DS7", visualization = True)
     
-    gen = InstanceGenerator(length = 300, width = 300, nusers = 4000, ncandidates = 300)
+    gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 300)
     gen.generateInstance(file = "DS8", visualization = True)
+    '''
 
     

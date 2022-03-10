@@ -2,8 +2,7 @@ import numpy as np
 
 class Instance:
     def __init__(self):
-        self.length = None
-        self.width = None
+        self.size = None
         
         # id:[cost, range, power]
         self.cells = {}
@@ -25,8 +24,7 @@ class Instance:
             line = 1
 
             # AoI dimensions
-            size = list(map(float, ds[line].split()))
-            self.length, self.width = size[0], size[1]
+            self.size = float(ds[line])
             line += 2
 
             # Load cells' data
