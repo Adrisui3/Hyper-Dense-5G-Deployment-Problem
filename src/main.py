@@ -8,8 +8,11 @@ import datetime
 
 if __name__ == "__main__":
     LSITER = 5000
-    oper = [upgradeCells, downgradeCells]
+    ASITER = {"DS1":15000, "DS2":20000, "DS3":20000, "DS4":20000, "DS5": 25000, "DS6": 25000, "DS7": 25000, "DS8": 35000}
+    oper = [upgradeCells, downgradeCells, swapCells, deployConnected]
     init_deployment = False
+    AS_SEGMMENT = 250
+    AS_R = 0.05
 
     path_ds = "./data/"
     ds_r = os.listdir(path_ds)
@@ -25,6 +28,7 @@ if __name__ == "__main__":
 
     for ds in datasets:
         print("Current dataset: ", ds)
+        ITER = ASITER[ds]
         instance = Instance()
         instance.loadInstance(ds, visualization = True)
         
@@ -36,8 +40,9 @@ if __name__ == "__main__":
         for i in range(nruns):
 
             tini = time.time()
-            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment)
+            #best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment)
             #best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER, oper = oper, init = init_deployment)
+            best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = oper, init = init_deployment, iter = ITER, segment = AS_SEGMMENT, r = AS_R)
             tend = time.time()
 
             if not best_solution.isFeasible() or best_solution.objective() != best_objective:
