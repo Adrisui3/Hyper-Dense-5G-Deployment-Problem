@@ -4,9 +4,9 @@ import os
 
 
 class Deployment:
-    def __init__(self, instance, max_cost = None, max_interferences = None, weights = (1, 1, 1), deployment = None):
+    def __init__(self, instance, max_cost = None, max_interferences = None, weights = (1, 1, 1), deployment = None, init = True):
         self.__instance = instance
-        self.__deployment = deployment if deployment is not None else self.__instance.generateInitDeployment()
+        self.__deployment = deployment if deployment is not None else self.__instance.generateInitDeployment(init = init)
         self.__wcoverage = weights[0]        
         self.__wcost = weights[1]
         self.__winterferences = weights[2]
@@ -39,7 +39,7 @@ class Deployment:
     
     def __coveredUsersHelper(self, deployment):
         covered_users = set()
-        nnull_idx = self.getNonNullCells()
+        nnull_idx = [i for i in range(self.__instance.ncandidates) if deployment[i] != 0]
         for i in range(self.__instance.nusers):
             user_dist = self.__instance.dmatrix_users_candidates[i]
             for j in nnull_idx:
@@ -155,12 +155,15 @@ class Deployment:
     
     def getNonNullCells(self):
         return [i for i in range(self.__instance.ncandidates) if self.__deployment[i] != 0]
+    
+    def getNullCells(self):
+        return [i for i in range(self.__instance.ncandidates) if self.__deployment[i] == 0]
 
     def test(self):
-        print(" --- DEBUG ---")
+        print("--- DEPLOYMENT SUMMARY ---")
+        print("Coverage: ", self.coverage())
         print("Cost: ", self.cost())
         print("Max cost", self.__max_cost)
-        print("Coverage: ", self.coverage())
         print("Interferences: ", self.interferences())
         print("Max interferences: ", self.__max_interferences)
         print("Objective: ", self.objective())
@@ -173,9 +176,10 @@ if __name__ == "__main__":
     ds_r = os.listdir(path_ds)
     datasets = [name for name in ds_r if "_coordinates" not in name]
     datasets.sort()
+    init = True
     
     for ds in datasets:
         ins = Instance()
         ins.loadInstance(file = ds, visualization = True)
-        sol = Deployment(instance = ins)
+        sol = Deployment(instance = ins, init = init)
         sol.test()

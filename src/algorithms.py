@@ -4,12 +4,13 @@ from operators import *
 import random
 import numpy as np
 
-def localSearch(problem_instance, iter, oper, wobjective = (1, 1, 1)):
-    current_solution = Deployment(instance = problem_instance, weights = wobjective)
+def localSearch(problem_instance, iter, oper, init, wobjective = (1, 1, 1)):
+    current_solution = Deployment(instance = problem_instance, weights = wobjective, init = init)
     best_solution = current_solution
     best_objective = current_solution.objective()
     
     for _ in range(iter):
+        #print("Iteration: ", _)
         # Randomly selected operator to be applied
         current_solution = random.choices(oper, k = 1)[0](best_solution)
 
@@ -22,8 +23,8 @@ def localSearch(problem_instance, iter, oper, wobjective = (1, 1, 1)):
     return best_solution, best_objective
 
 # Values for initial and final temperature are found in the references
-def simulatedAnnealing(problem_instance, oper, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
-    incumbent = Deployment(instance = problem_instance, weights = wobjective)
+def simulatedAnnealing(problem_instance, oper, init, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
+    incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
     best_solution = incumbent
     best_objective = best_solution.objective()
     temp = T_ini
@@ -50,10 +51,10 @@ def simulatedAnnealing(problem_instance, oper, n_neighbors = 1, T_ini = 100, T_e
     
     return best_solution, best_objective
 
-def simulatedAnnealingTABU(problem_instance, oper, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
-    incumbent = Deployment(instance = problem_instance, weights = wobjective)
+    incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
     best_solution = incumbent
     best_objective = best_solution.objective()
     temp = T_ini
@@ -89,20 +90,26 @@ def simulatedAnnealingTABU(problem_instance, oper, n_neighbors = 1, T_ini = 100,
                     infeasible_solutions.add(current_solution.immutableDeployment())
 
         temp = temp * alpha
-        print("Temperature: ", temp)
+        #print("Temperature: ", temp)
     
     return best_solution, best_objective
 
 if __name__ == "__main__":
     ins = Instance()
-    ins.loadInstance(file = "DS1", visualization = False)
+    ins.loadInstance(file = "DS8", visualization = False)
+    oper = [upgradeCells, downgradeCells]
+    init = True
 
-    solution, objective = simulatedAnnealingTABU(problem_instance = ins, oper = [upgradeCells, downgradeCells])
+    #solution_ls, objective_ls = localSearch(problem_instance = ins, iter = 5000, oper = oper, init = init)
+    solution_sa, objective_sa = simulatedAnnealingTABU(problem_instance = ins, oper = oper, init = init)
 
     debug = Deployment(instance = ins)
     print(" --- INITIAL SOLUTION DEBUG ---")
     debug.test()
     print("Initial solution: ", ins.generateInitDeployment())
-    print(" --- BEST SOLUTION DEBUG --- ")
-    solution.test()
-    print("Best solution found: ", solution)
+    print(" --- BEST SOLUTION DEBUG SA --- ")
+    solution_sa.test()
+    print("Best solution found SA: ", solution_sa)
+    print(" --- BEST SOLUTION DEBUG LS --- ")
+    solution_ls.test()
+    print("Best solution found LS: ", solution_ls)

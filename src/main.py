@@ -8,7 +8,9 @@ import datetime
 
 if __name__ == "__main__":
     LSITER = 5000
-    
+    oper = [upgradeCells, downgradeCells]
+    init_deployment = False
+
     path_ds = "./data/"
     ds_r = os.listdir(path_ds)
     datasets = [name for name in ds_r if "_coordinates" not in name]
@@ -16,6 +18,7 @@ if __name__ == "__main__":
 
     print("Datasets available: ", datasets)
     nruns = int(input("Number of runs: "))
+    algorithm = input("Algorithm: ")
     notes = input("Notes: ")
 
     results = {}
@@ -33,7 +36,8 @@ if __name__ == "__main__":
         for i in range(nruns):
 
             tini = time.time()
-            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = [upgradeCells, downgradeCells])
+            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment)
+            #best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER, oper = oper, init = init_deployment)
             tend = time.time()
 
             if not best_solution.isFeasible() or best_solution.objective() != best_objective:
@@ -57,6 +61,9 @@ if __name__ == "__main__":
     with open("results/" + date, "w") as f:
         print(" --- RESULTS --- ", file = f)
         print("Runs per dataset: ", nruns, file = f)
+        print("Algorithm: ", algorithm, file = f)
+        print("Operators: ", oper, file = f)
+        print("Initial deployment: ", init_deployment, file = f)
         print("Notes: ", notes, "\n", file = f)
 
         for ds in datasets:

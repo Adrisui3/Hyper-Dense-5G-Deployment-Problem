@@ -82,9 +82,11 @@ class Instance:
                     cloc = list(map(float, ds_c[line].split()))
                     self.candidate_locations.append(tuple(cloc))
                     line += 1
-    
-    def generateInitDeployment(self):
-        return [0 if i not in self.init_macrocells else self.macro_id for i in range(self.ncandidates)]
+    # If init is set to true, it will provide the default solution provided by the instance.
+    # Otherwise, it will generate an empty solution
+    def generateInitDeployment(self, init = True):
+        return [0 if i not in self.init_macrocells else self.macro_id for i in range(self.ncandidates)] if init else [0 for _ in range(self.ncandidates)]
+
 
 if __name__ == "__main__":
     ins = Instance()
