@@ -21,18 +21,17 @@ class InstanceGenerator:
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
 
-    def __generateBlobs(self):
-        users_r, _ = make_blobs(n_samples = self.nusers, n_features = 2, cluster_std = 1.0, center_box=(0, self.size))
+    def __generateBlobs(self, cluster_std):        
+        users_r, _ = make_blobs(n_samples = self.nusers, n_features = 2, cluster_std = cluster_std, center_box=(0, self.size))
         users = []
-
         for user in users_r:
             x = abs(user[0]) if user[0] <= self.size else self.size
             y = abs(user[1]) if user[1] <= self.size else self.size
             users.append((x, y))
-        
+
         return users
 
-    def generateInstance(self, file, visualization, blobs = False, path = "data/"):
+    def generateInstance(self, file, blobs = False, path = "data/", cluster_std = None):
         candidate_locations = []
         deployed_macros = []
         user_locations = []
@@ -42,9 +41,10 @@ class InstanceGenerator:
         # Distances between cells is necessary to grant feasibility
         dmatrix_candidates = [[] for _ in range(self.ncandidates)]
 
-        with open(path + file, "w") as f:
+        kind = "uniform/" if not blobs else "blobs/"
+        with open(path + kind + file, "w") as f:
             print("# Site size (km)", file = f)
-            print(self.size, self.size, file = f)
+            print(self.size, file = f)
             
             print("# Number of cells", file = f)
             print(len(self.cells), file = f)
@@ -60,8 +60,11 @@ class InstanceGenerator:
             print(self.ncandidates, file = f)
 
             # Random generation of locations for both users and candidate points
-            for i in range(self.nusers):
-                user_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
+            if not blobs:
+                for i in range(self.nusers):
+                    user_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
+            else:
+                user_locations = self.__generateBlobs(cluster_std)
             
             for i in range(self.ncandidates):
                 candidate_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
@@ -83,56 +86,80 @@ class InstanceGenerator:
                 print(' '.join(map(str, dmatrix_candidates[i])), file = f)
 
             # Random deployment of macrocells emulating a 4G network
-            # Between 5-10% of candidate locations will have a macrocell
-            perc = random.uniform(0.05, 0.10)
-            deployed_macros = random.sample(range(len(candidate_locations)), math.ceil(len(candidate_locations)*perc))
+            # Between 5-7% of candidate locations will have a macrocell
+            perc = random.uniform(0.05, 0.07)
+            deployed_macros = random.sample(range(self.ncandidates), math.ceil(self.ncandidates*perc))
             print("# Candidate locations' indices where macrocells are deployed", file = f)
             print(' '.join(map(str, deployed_macros)), file = f)
-
-        # Set to true to produce further data aimed for visualization
-        if visualization:
-            with open(path + file + "_coordinates", "w") as f:
-                print("# User's coordinates", file = f)
-                for i in range(self.nusers):
-                    print(user_locations[i][0], user_locations[i][1], file = f)
-                
-                print("# Candidate locations coordinates", file = f)
-                for j in range(self.ncandidates):
-                    print(candidate_locations[j][0], candidate_locations[j][1], file = f)
+            
+            # Both users and candidates coordinates
+            print("# User's coordinates", file = f)
+            for i in range(self.nusers):
+                print(user_locations[i][0], user_locations[i][1], file = f)
+            
+            print("# Candidate locations coordinates", file = f)
+            for j in range(self.ncandidates):
+                print(candidate_locations[j][0], candidate_locations[j][1], file = f)
 
 
 
 if __name__ == "__main__":
+    '''
+    # UNIFORM INSTANCES #
 
     # Small instances
     gen = InstanceGenerator(size = 100, nusers = 1000, ncandidates = 50)
-    gen.generateBlobs()
-
-    '''
-    gen.generateInstance(file = "DS1", visualization = True)
+    gen.generateInstance(file = "DS1_U")
 
     gen = InstanceGenerator(size = 100, nusers = 1000, ncandidates = 100)
-    gen.generateInstance(file = "DS2", visualization = True)
+    gen.generateInstance(file = "DS2_U")
 
     gen = InstanceGenerator(size = 100, nusers = 2000, ncandidates = 100)
-    gen.generateInstance(file = "DS3", visualization = True)
+    gen.generateInstance(file = "DS3_U")
 
     # Medium instances
     gen = InstanceGenerator(size = 200, nusers = 2000, ncandidates = 100)
-    gen.generateInstance(file = "DS4", visualization = True)
+    gen.generateInstance(file = "DS4_U")
 
     gen = InstanceGenerator(size = 200, nusers = 2000, ncandidates = 200)
-    gen.generateInstance(file = "DS5", visualization = True)
+    gen.generateInstance(file = "DS5_U")
 
     gen = InstanceGenerator(size = 200, nusers = 4000, ncandidates = 200)
-    gen.generateInstance(file = "DS6", visualization = True)
+    gen.generateInstance(file = "DS6_U")
     
     # Big instances
     gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 200)
-    gen.generateInstance(file = "DS7", visualization = True)
+    gen.generateInstance(file = "DS7_U")
     
     gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 300)
-    gen.generateInstance(file = "DS8", visualization = True)
+    gen.generateInstance(file = "DS8_U")
     '''
 
+    # BLOB INSTANCES #
     
+    # Small instances
+    gen = InstanceGenerator(size = 100, nusers = 1000, ncandidates = 50)
+    gen.generateInstance(file = "DS1_B", blobs = True, cluster_std = 5.0)
+
+    gen = InstanceGenerator(size = 100, nusers = 1000, ncandidates = 100)
+    gen.generateInstance(file = "DS2_B", blobs = True, cluster_std = 5.0)
+
+    gen = InstanceGenerator(size = 100, nusers = 2000, ncandidates = 100)
+    gen.generateInstance(file = "DS3_B", blobs = True, cluster_std = 7.0)
+
+    # Medium instances
+    gen = InstanceGenerator(size = 200, nusers = 2000, ncandidates = 100)
+    gen.generateInstance(file = "DS4_B", blobs = True, cluster_std =  10.0)
+
+    gen = InstanceGenerator(size = 200, nusers = 2000, ncandidates = 200)
+    gen.generateInstance(file = "DS5_B", blobs = True, cluster_std = 10.0)
+
+    gen = InstanceGenerator(size = 200, nusers = 4000, ncandidates = 200)
+    gen.generateInstance(file = "DS6_B", blobs = True, cluster_std = 10.0)
+    
+    # Big instances
+    gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 200)
+    gen.generateInstance(file = "DS7_B", blobs = True, cluster_std = 15.0)
+    
+    gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 300)
+    gen.generateInstance(file = "DS8_B", blobs = True, cluster_std = 15.0)

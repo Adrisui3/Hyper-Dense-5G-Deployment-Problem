@@ -3,7 +3,6 @@ import numpy as np
 class Instance:
     def __init__(self):
         self.size = None
-        
         # id:[cost, range, power]
         self.cells = {}
         self.cells_ids = None
@@ -13,12 +12,10 @@ class Instance:
         self.dmatrix_users_candidates = None
         self.dmatrix_candidates = None
         self.init_macrocells = None
-
-        #If visualization enabled
         self.user_locations = None
         self.candidate_locations = None
 
-    def loadInstance(self, file, visualization, path="data/"):
+    def loadInstance(self, file, path):
         with open(path + file) as f:
             ds = f.readlines()
             line = 1
@@ -50,7 +47,7 @@ class Instance:
             for i in range(self.nusers):
                 self.dmatrix_users_candidates[i] = list(map(float, ds[line].split()))
                 line+=1
-            
+
             line += 1
             for i in range(self.ncandidates):
                 self.dmatrix_candidates[i] = list(map(float, ds[line].split()))
@@ -59,27 +56,23 @@ class Instance:
             # Initial deployment data
             line += 1
             self.init_macrocells = set(map(int, ds[line].split()))
+            line += 2
 
-        # If visualization options are enabled    
-        if visualization:
-            with open(path + file + "_coordinates") as f:
-                line = 1
-                ds_c = f.readlines()
-
-                # Load user locations
-                self.user_locations = []
-                for _ in range(self.nusers):
-                    uloc = list(map(float, ds_c[line].split()))
-                    self.user_locations.append(tuple(uloc))
-                    line += 1
-                
-                # Load candidate locations
+            # Load user locations
+            self.user_locations = []
+            for _ in range(self.nusers):
+                uloc = list(map(float, ds[line].split()))
+                self.user_locations.append(tuple(uloc))
                 line += 1
-                self.candidate_locations = []
-                for _ in range(self.ncandidates):
-                    cloc = list(map(float, ds_c[line].split()))
-                    self.candidate_locations.append(tuple(cloc))
-                    line += 1
+            
+            # Load candidate locations
+            line += 1
+            self.candidate_locations = []
+            for _ in range(self.ncandidates):
+                cloc = list(map(float, ds[line].split()))
+                self.candidate_locations.append(tuple(cloc))
+                line += 1
+    
     # If init is set to true, it will provide the default solution provided by the instance.
     # Otherwise, it will generate an empty solution
     def generateInitDeployment(self, init = True):
@@ -88,6 +81,6 @@ class Instance:
 
 if __name__ == "__main__":
     ins = Instance()
-    ins.loadInstance(file = "DS1", visualization = True)
+    ins.loadInstance(file = "uniform/DS2")
 
     print(ins.generateInitDeployment())

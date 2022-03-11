@@ -172,14 +172,14 @@ class Deployment:
     
 
 if __name__ == "__main__":
-    path_ds = "./data/"
-    ds_r = os.listdir(path_ds)
-    datasets = [name for name in ds_r if "_coordinates" not in name]
+    path_ds = "data/blobs/"
+    datasets = os.listdir(path_ds)
     datasets.sort()
     init = True
     
     for ds in datasets:
+        print(" --- DATASET", ds, "---")
         ins = Instance()
-        ins.loadInstance(file = ds, visualization = True)
+        ins.loadInstance(file = ds, path = path_ds)
         sol = Deployment(instance = ins, init = init)
         sol.test()

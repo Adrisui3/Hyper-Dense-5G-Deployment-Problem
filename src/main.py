@@ -8,15 +8,20 @@ import datetime
 
 if __name__ == "__main__":
     LSITER = 5000
-    ASITER = {"DS1":15000, "DS2":15000, "DS3":15000, "DS4":15000, "DS5":15000, "DS6":15000, "DS7":15000, "DS8":15000}
+    ASITER = {"DS1_U":15000, "DS2_U":15000, "DS3_U":15000, "DS4_U":15000, "DS5_U":15000, "DS6_U":15000, "DS7_U":15000, "DS8_U":15000,
+              "DS1_B":15000, "DS2_B":15000, "DS3_B":15000, "DS4_B":15000, "DS5_B":15000, "DS6_B":15000, "DS7_B":15000, "DS8_B":15000}
     oper = [upgradeCells, downgradeCells, swapCells, deployConnected]
-    init_deployment = False
+    init_deployment = True
     AS_SEGMMENT = 250
     AS_R = 0.05
 
-    path_ds = "./data/"
-    ds_r = os.listdir(path_ds)
-    datasets = [name for name in ds_r if "_coordinates" not in name]
+    paths_ds = ["data/uniform/", "data/blobs/"]
+    ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
+    path = paths_ds[ds_kind - 1]
+    datasets = os.listdir(path)
+    if not datasets:
+        print("No datasets detected")
+        exit()
     datasets.sort()
 
     print("Datasets available: ", datasets)
@@ -30,7 +35,7 @@ if __name__ == "__main__":
         print("Current dataset: ", ds)
         ITER = ASITER[ds]
         instance = Instance()
-        instance.loadInstance(ds, visualization = True)
+        instance.loadInstance(file = ds, path = path)
         
         objectives = []
         split_objectives = []
@@ -41,8 +46,8 @@ if __name__ == "__main__":
 
             tini = time.time()
             #best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment)
-            #best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER, oper = oper, init = init_deployment)
-            best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = oper, init = init_deployment, iter = ITER, segment = AS_SEGMMENT, r = AS_R)
+            best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER, oper = oper, init = init_deployment)
+            #best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = oper, init = init_deployment, iter = ITER, segment = AS_SEGMMENT, r = AS_R)
             tend = time.time()
 
             if not best_solution.isFeasible() or best_solution.objective() != best_objective:
@@ -65,6 +70,7 @@ if __name__ == "__main__":
     date = date.replace(" ", "--")
     with open("results/" + date, "w") as f:
         print(" --- RESULTS --- ", file = f)
+        print("Dataset topology: ", ds_kind, file = f)
         print("Runs per dataset: ", nruns, file = f)
         print("Algorithm: ", algorithm, file = f)
         print("Operators: ", oper, file = f)
