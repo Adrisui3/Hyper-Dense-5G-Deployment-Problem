@@ -21,8 +21,8 @@ class InstanceGenerator:
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
 
-    def __generateBlobs(self, cluster_std):        
-        users_r, _ = make_blobs(n_samples = self.nusers, n_features = 2, cluster_std = cluster_std, center_box=(0, self.size))
+    def __generateBlobs(self, cluster_std, centers):        
+        users_r, _ = make_blobs(n_samples = self.nusers, n_features = 2, cluster_std = cluster_std, center_box=(0, self.size), centers = centers)
         users = []
         for user in users_r:
             x = abs(user[0]) if user[0] <= self.size else self.size
@@ -31,7 +31,7 @@ class InstanceGenerator:
 
         return users
 
-    def generateInstance(self, file, blobs = False, path = "data/", cluster_std = None):
+    def generateInstance(self, file, blobs = False, path = "data/", cluster_std = None, centers = None):
         candidate_locations = []
         deployed_macros = []
         user_locations = []
@@ -64,7 +64,7 @@ class InstanceGenerator:
                 for i in range(self.nusers):
                     user_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
             else:
-                user_locations = self.__generateBlobs(cluster_std)
+                user_locations = self.__generateBlobs(cluster_std, centers)
             
             for i in range(self.ncandidates):
                 candidate_locations.append((self.distrib(0, self.size), self.distrib(0, self.size)))
@@ -134,7 +134,8 @@ if __name__ == "__main__":
     gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 300)
     gen.generateInstance(file = "DS8_U")
     '''
-
+    
+    '''
     # BLOB INSTANCES #
     
     # Small instances
@@ -163,3 +164,4 @@ if __name__ == "__main__":
     
     gen = InstanceGenerator(size = 300, nusers = 4000, ncandidates = 300)
     gen.generateInstance(file = "DS8_B", blobs = True, cluster_std = 15.0)
+    '''
