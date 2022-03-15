@@ -10,7 +10,7 @@ if __name__ == "__main__":
     LSITER = 5000
     ASITER = {"DS1_U":15000, "DS2_U":15000, "DS3_U":15000, "DS4_U":15000, "DS5_U":15000, "DS6_U":15000, "DS7_U":15000, "DS8_U":15000,
               "DS1_B":15000, "DS2_B":15000, "DS3_B":15000, "DS4_B":15000, "DS5_B":15000, "DS6_B":15000, "DS7_B":15000, "DS8_B":15000}
-    oper = [upgradeCells, downgradeCells]
+    oper = [upgradeCells, downgradeCells, swapCells, deployConnected]
     init_deployment = True
     AS_SEGMMENT = 250
     AS_R = 0.05
@@ -64,7 +64,7 @@ if __name__ == "__main__":
             split_objectives.append(best_solution.splitObjective())
             runtimes.append(tend - tini)
 
-            print("     Iteration number:", i, "-", "Runtime:", tend - tini, "seconds")
+            print("     Iteration number:", i, "-", "Runtime:", tend - tini, "seconds", "-", "Best objective: ", best_objective)
         
         overall_obj = min(objectives)
         overall_sol = solutions[objectives.index(overall_obj)]

@@ -83,7 +83,7 @@ def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini 
                     if feasible_solutions[best_solution.immutableDeployment()] < feasible_solutions[incumbent.immutableDeployment()]:
                         best_solution = incumbent
                         best_objective = feasible_solutions[incumbent.immutableDeployment()]
-                        print("New best!")
+                        #print("New best!")
                 elif random.uniform(0, 1) < np.exp(-delta/temp):
                     incumbent = current_solution
             else:
@@ -91,7 +91,7 @@ def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini 
                     infeasible_solutions.add(current_solution.immutableDeployment())
 
         temp = temp * alpha
-        print("Temperature:", temp, "-- Current best: ", best_objective)
+        #print("Temperature:", temp, "-- Current best: ", best_objective)
     
     return best_solution, best_objective
 
