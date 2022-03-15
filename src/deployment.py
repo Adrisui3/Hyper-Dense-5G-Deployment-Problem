@@ -106,7 +106,7 @@ class Deployment:
 
     def isFeasible(self):
         # Non-null cell indices for the __deployment array
-        nncells_idx = [i for i in range(self.__instance.ncandidates) if self.__deployment[i] != 0]
+        nncells_idx = self.getNonNullCells()
         # For every non-null cell, true if connected, false if not.
         # Initially, all macrocells are connected. The aim is to find if the others are.
         connected_cells = [True if self.__deployment[idx] == self.__instance.macro_id else False for idx in nncells_idx]

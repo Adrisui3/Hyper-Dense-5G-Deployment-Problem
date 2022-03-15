@@ -10,10 +10,15 @@ if __name__ == "__main__":
     LSITER = 5000
     ASITER = {"DS1_U":15000, "DS2_U":15000, "DS3_U":15000, "DS4_U":15000, "DS5_U":15000, "DS6_U":15000, "DS7_U":15000, "DS8_U":15000,
               "DS1_B":15000, "DS2_B":15000, "DS3_B":15000, "DS4_B":15000, "DS5_B":15000, "DS6_B":15000, "DS7_B":15000, "DS8_B":15000}
-    oper = [upgradeCells, downgradeCells, swapCells, deployConnected]
+    oper = [upgradeCells, downgradeCells]
     init_deployment = True
     AS_SEGMMENT = 250
     AS_R = 0.05
+
+    T_INI = 6
+    T_END = 0.0001
+    ALPHA = 0.999
+    N_NEIGHBORS = 3
 
     paths_ds = ["data/uniform/", "data/blobs/"]
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
@@ -45,9 +50,9 @@ if __name__ == "__main__":
         for i in range(nruns):
 
             tini = time.time()
-            #best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment)
+            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment, T_ini = T_INI, T_end = T_END, alpha = ALPHA, n_neighbors = N_NEIGHBORS)
             #best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER, oper = oper, init = init_deployment)
-            best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = oper, init = init_deployment, iter = ITER, segment = AS_SEGMMENT, r = AS_R)
+            #best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = oper, init = init_deployment, iter = ITER, segment = AS_SEGMMENT, r = AS_R)
             tend = time.time()
 
             if not best_solution.isFeasible() or best_solution.objective() != best_objective:

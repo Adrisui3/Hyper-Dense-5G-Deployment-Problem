@@ -52,19 +52,18 @@ def deployConnected(current_solution):
     null_idx = current_solution.getNullCells()
     cells = current_solution.instance().cells_ids[1:]
 
-    if nnull_idx:
-        for idx in nnull_idx:
-            cell_range = current_solution.instance().cells[current_solution[idx]][1]
-            cell_dist = current_solution.instance().dmatrix_candidates[idx]
-            
-            in_range = [n_idx for n_idx in null_idx if cell_dist[n_idx] <= cell_range]
-            if not in_range:
-                continue     
-            
-            in_range_d = [cell_dist[i] for i in in_range]
-            f_idx = in_range[in_range_d.index(max(in_range_d))]
-            neighbor[f_idx] = random.choice(cells)
-            break
+    for idx in nnull_idx:
+        cell_range = current_solution.instance().cells[current_solution[idx]][1]
+        cell_dist = current_solution.instance().dmatrix_candidates[idx]
+        
+        in_range = [n_idx for n_idx in null_idx if cell_dist[n_idx] <= cell_range]
+        if not in_range:
+            continue     
+        
+        in_range_d = [cell_dist[i] for i in in_range]
+        f_idx = in_range[in_range_d.index(max(in_range_d))]
+        neighbor[f_idx] = random.choice(cells)
+        break
     
     return neighbor
 
