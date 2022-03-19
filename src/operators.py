@@ -75,16 +75,3 @@ def deployMacrocell(current_solution):
         neighbor[random.choice(null_idx)] = neighbor.instance().macro_id
     
     return neighbor
-
-
-if __name__ == "__main__":
-    ins = Instance()
-    ins.loadInstance(file = "DS1", visualization = True)
-
-    sol = Deployment(instance = ins)
-    print(sol)
-    print(upgradeCells(sol))
-    print(downgradeCells(sol))
-    print(swapCells(sol))
-    print(deployConnected(sol))
-    print(deployMacrocell(sol))

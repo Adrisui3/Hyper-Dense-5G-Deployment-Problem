@@ -1,6 +1,5 @@
 from instance import Instance
 import copy
-import os
 
 
 class Deployment:
@@ -168,18 +167,3 @@ class Deployment:
         print("Max interferences: ", self.__max_interferences)
         print("Objective: ", self.objective())
         print("Feasible: ", self.isFeasible())
-
-    
-
-if __name__ == "__main__":
-    path_ds = "data/blobs/"
-    datasets = os.listdir(path_ds)
-    datasets.sort()
-    init = True
-    
-    for ds in datasets:
-        print(" --- DATASET", ds, "---")
-        ins = Instance()
-        ins.loadInstance(file = ds, path = path_ds)
-        sol = Deployment(instance = ins, init = init)
-        sol.test()

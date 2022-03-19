@@ -77,10 +77,3 @@ class Instance:
     # Otherwise, it will generate an empty solution
     def generateInitDeployment(self, init = True):
         return [0 if i not in self.init_macrocells else self.macro_id for i in range(self.ncandidates)] if init else [0 for _ in range(self.ncandidates)]
-
-
-if __name__ == "__main__":
-    ins = Instance()
-    ins.loadInstance(file = "uniform/DS2")
-
-    print(ins.generateInitDeployment())
