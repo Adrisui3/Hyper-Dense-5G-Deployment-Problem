@@ -3,6 +3,9 @@ from instance import Instance
 from operators import *
 import random
 import numpy as np
+import threading
+import os
+###################### SA ######################
 
 def localSearch(problem_instance, iter, oper, init, wobjective = (1, 1, 1)):
     current_solution = Deployment(instance = problem_instance, weights = wobjective, init = init)
@@ -22,8 +25,12 @@ def localSearch(problem_instance, iter, oper, init, wobjective = (1, 1, 1)):
         print("Iteration: ", _, " -- Current best: ", best_objective)
     return best_solution, best_objective
 
-# Values for initial and final temperature are found in the references
-def simulatedAnnealing(problem_instance, oper, init, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
+
+
+
+###################### SA ######################
+
+def simulatedAnnealing(problem_instance, oper, init, n_neighbors = 1, T_ini = 10, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
     best_solution = incumbent
     best_objective = best_solution.objective()
@@ -50,7 +57,7 @@ def simulatedAnnealing(problem_instance, oper, init, n_neighbors = 1, T_ini = 10
     
     return best_solution, best_objective
 
-def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini = 100, T_end = 0.001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini = 10, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
@@ -93,6 +100,58 @@ def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini 
         #print("Temperature:", temp, "-- Current best: ", best_objective)
     
     return best_solution, best_objective
+
+def SAIteration(lock, thread_incumbents, thread_incumbents_costs, idx, temp, oper, best_solution, best_objective):
+    current_solution = random.choices(oper, k = 1)[0](thread_incumbents[idx])
+
+    if current_solution.isFeasible():
+        current_objective = current_solution.objective()
+        incumbent_objective = thread_incumbents_costs[idx]
+        delta = incumbent_objective - current_objective
+        if delta < 0:
+            thread_incumbents[idx] = current_solution
+            thread_incumbents_costs[idx] = current_objective
+            with lock:
+                if best_objective[0] < thread_incumbents_costs[idx]:
+                    best_solution[0] = thread_incumbents[idx]
+                    best_objective[0] = thread_incumbents_costs[idx]
+        elif random.uniform(0, 1) < np.exp(-delta/temp):
+            thread_incumbents[idx] = current_solution
+            thread_incumbents_costs[idx] = current_objective
+
+
+def simulatedAnnealingParallel(problem_instance, oper, init, n_jobs = 1, T_ini = 10, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
+    n_jobs = os.cpu_count() if n_jobs == -1 else n_jobs
+    incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
+    best_solution = [incumbent]
+    best_objective = [best_solution[0].objective()]
+    thread_incumbents = [best_solution[0].copy() for _ in range(n_jobs)]
+    thread_incumbents_costs = [best_objective[0] for _ in range(n_jobs)]
+    threads = []
+    lock = threading.Lock()
+    
+    temp = T_ini
+    while temp > T_end:
+        for ii in range(n_jobs):
+            thread = threading.Thread(target=SAIteration, 
+                                      args=(lock, thread_incumbents, thread_incumbents_costs, ii, temp, oper, best_solution, best_objective))
+            thread.start()
+            threads.append(thread)
+        
+        for thread in threads:
+            thread.join()
+        
+        best_incumbent_idx = thread_incumbents_costs.index(max(thread_incumbents_costs))
+        thread_incumbents = [thread_incumbents[best_incumbent_idx].copy() for _ in range(n_jobs)]
+        thread_incumbents_costs = [thread_incumbents_costs[best_incumbent_idx] for _ in range(n_jobs)]
+
+        temp = temp * alpha
+        #print("Temperature:", temp, "-- Current best: ", best_objective[0])
+    
+    return best_solution[0], best_objective[0]
+
+
+###################### ALNS ######################
 
 def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = (1, 1, 1)):
     feasible_solutions = {}
