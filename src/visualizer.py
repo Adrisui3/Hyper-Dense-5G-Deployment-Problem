@@ -27,6 +27,7 @@ class Visualizer:
                 reach = self.instance.cells[cell][1]
                 x_d = [candidates[idx][0] for idx in indices]
                 y_d = [candidates[idx][1] for idx in indices]
+                # This still requires to be adjusted
                 plt.scatter(x_d, y_d, s = reach * 1000, alpha = 0.3)
 
         plt.scatter(x = x_u, y = y_u, s=5, c = 'blue')
