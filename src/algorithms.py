@@ -22,7 +22,7 @@ def localSearch(problem_instance, iter, oper, init, wobjective = (1, 1, 1)):
                 best_solution = current_solution
                 best_objective = current_objective
 
-        print("Iteration: ", _, " -- Current best: ", best_objective)
+        #print("Iteration: ", _, " -- Current best: ", best_objective)
     return best_solution, best_objective
 
 ###################### SA ######################
