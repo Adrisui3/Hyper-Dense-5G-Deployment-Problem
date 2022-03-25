@@ -33,7 +33,13 @@ class Instance:
                 line += 1
             
             self.cells_ids = list(self.cells.keys())
-            self.macro_id = max(self.cells_ids)
+            
+            # Macro cells are the ones with the longest reach
+            max_range = 0
+            for idx in self.cells_ids:
+                if self.cells[idx][1] > max_range:
+                    max_range = self.cells[idx][1]
+                    self.macro_id = idx
 
             # Distance matrices
             line += 1

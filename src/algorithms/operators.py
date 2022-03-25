@@ -50,7 +50,7 @@ def deployConnected(current_solution):
     neighbor = current_solution.copy()
     nnull_idx = current_solution.getNonNullCells()
     null_idx = current_solution.getNullCells()
-    cells = current_solution.instance().cells_ids[1:]
+    cells = [i for i in current_solution.instance().cells_ids if i != current_solution.instance().macro_id]
 
     for idx in nnull_idx:
         cell_range = current_solution.instance().cells[current_solution[idx]][1]
