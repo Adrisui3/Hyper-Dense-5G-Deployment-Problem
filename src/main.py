@@ -1,27 +1,71 @@
+import sys
+sys.path.insert(1, './src/algorithms')
+
 from deployment import Deployment
 from instance import Instance
-from algorithms import *
+from localSearch import *
+from ALNS import *
+from simulatedAnnealing import *
+
 import numpy as np
 import time
 import os
 import datetime
 
+def algorithm(algorithm, parameters, instance):
+    # Yes, this is Python code
+    match algorithm:
+        case "LS":
+            t_ini = time.time()
+            best_solution, best_objective = localSearch(problem_instance = instance, iter = parameters["iter"], oper = parameters["oper"], init = parameters["init"])
+            t_end = time.time()
+        case "SA":
+            t_ini = time.time()
+            best_solution, best_objective = simulatedAnnealing(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], T_ini = parameters["t_ini"], T_end = parameters["t_end"], alpha = parameters["alpha"], n_neighbors = parameters["n_neighbors"])
+            t_end = time.time()
+        case "SA-T":
+            t_ini = time.time()
+            best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], T_ini = parameters["t_ini"], T_end = parameters["t_end"], alpha = parameters["alpha"], n_neighbors = parameters["n_neighbors"])
+            t_end = time.time()
+        case "SA-P":
+            t_ini = time.time()
+            best_solution, best_objective = simulatedAnnealingParallel(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], T_ini = parameters["t_ini"], T_end = parameters["t_end"], alpha = parameters["alpha"], n_jobs = parameters["n_jobs"])
+            t_end = time.time()
+        case "ALNS":
+            t_ini = time.time()
+            best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"], segment = parameters["segment"], r = parameters["r"])
+            t_end = time.time()
+        case "ALNS-T":
+            t_ini = time.time()
+            best_solution, best_objective = adaptiveSearchTemperature(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"], segment = parameters["segment"], r = parameters["r"])
+            t_end = time.time()
+
+    return best_solution, best_objective, t_end - t_ini
+
+
 if __name__ == "__main__":
-    oper = [upgradeCells, downgradeCells, swapCells, deployConnected]
+    oper = [upgradeCells, downgradeCells, swapCells, deployConnected] 
     init_deployment = True
     
     LSITER = 1000
     
-    ASITER = {"DS1_U":15000, "DS2_U":15000, "DS3_U":15000, "DS4_U":15000, "DS5_U":15000, "DS6_U":15000, "DS7_U":15000, "DS8_U":15000,
-              "DS1_B":15000, "DS2_B":15000, "DS3_B":15000, "DS4_B":15000, "DS5_B":15000, "DS6_B":15000, "DS7_B":15000, "DS8_B":15000}
-    AS_SEGMMENT = 250
-    AS_R = 0.05
+    ASITER = 15000
+    SEGMENT = 250
+    R = 0.05
 
     T_INI = 10
     T_END = 0.0001
     ALPHA = 0.999
-    N_THREADS = 4
+    N_JOBS = 4
     N_NEIGHBORS = 3
+
+    ls_params = {"iter":LSITER, "init":init_deployment, "oper":oper}
+    sa_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
+    sat_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
+    sap_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper}
+    alns_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "init":init_deployment, "oper":oper}
+    alnst_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "init":init_deployment, "oper":oper}
+    parameters = {"LS":ls_params, "SA":sa_params, "SA-T":sat_params, "SA-P":sap_params, "ALNS":alns_params, "ALNS-T":alnst_params, "init":init_deployment, "oper":oper}
 
     paths_ds = ["data/uniform/", "data/blobs/"]
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
@@ -35,16 +79,15 @@ if __name__ == "__main__":
     print("Datasets available: ", datasets)
     ds_selected = list(map(int, input("Datasets selected: ").split()))
     ds_selected = [datasets[i-1] for i in ds_selected]
-
+    
+    alg = input("Algorithm (LS, SA, SA-T, SA-P, ALNS, ALNS-T): ")
     nruns = int(input("Number of runs: "))
-    algorithm = input("Algorithm: ")
     notes = input("Notes: ")
 
     results = {}
 
     for ds in ds_selected:
         print("Current dataset: ", ds)
-        ITER = ASITER[ds]
         instance = Instance()
         instance.loadInstance(file = ds, path = path)
         
@@ -54,18 +97,7 @@ if __name__ == "__main__":
         solutions = []
 
         for i in range(nruns):
-
-            tini = time.time()
-            
-            #best_solution, best_objective = localSearch(problem_instance = instance, iter = LSITER, oper = oper, init = init_deployment)
-            
-            best_solution, best_objective = simulatedAnnealing(problem_instance = instance, oper = oper, init = init_deployment, T_ini = T_INI, T_end = T_END, alpha = ALPHA, n_neighbors = N_NEIGHBORS)
-            #best_solution, best_objective = simulatedAnnealingTABU(problem_instance = instance, oper = oper, init = init_deployment, T_ini = T_INI, T_end = T_END, alpha = ALPHA, n_neighbors = N_NEIGHBORS)
-            #best_solution, best_objective = simulatedAnnealingParallel(problem_instance = instance, oper = oper, init = init_deployment, T_ini = T_INI, T_end = T_END, alpha = ALPHA, n_jobs = N_THREADS)
-            
-            #best_solution, best_objective = adaptiveSearch(problem_instance = instance, oper = oper, init = init_deployment, iter = ITER, segment = AS_SEGMMENT, r = AS_R)
-            
-            tend = time.time()
+            best_solution, best_objective, runtime = algorithm(algorithm = alg, parameters = parameters[alg], instance = instance)
 
             if not best_solution.isFeasible() or best_solution.objective() != best_objective:
                 print("EXECUTION FAILED IN DATASET: ", ds)
@@ -74,9 +106,9 @@ if __name__ == "__main__":
             solutions.append(best_solution)
             objectives.append(best_objective)
             split_objectives.append(best_solution.splitObjective())
-            runtimes.append(tend - tini)
+            runtimes.append(runtime)
 
-            print("     Iteration number:", i, "-", "Runtime:", tend - tini, "seconds", "-", "Best objective: ", best_objective)
+            print("     Iteration number:", i, "-", "Runtime:", runtime, "seconds", "-", "Best objective: ", best_objective)
         
         overall_obj = max(objectives)
         overall_sol = solutions[objectives.index(overall_obj)]
@@ -85,13 +117,12 @@ if __name__ == "__main__":
 
     date = str(datetime.datetime.now())
     date = date.replace(" ", "--")
-    with open("results/" + algorithm + "-" + date, "w") as f:
+    with open("results/" + alg + "-" + date, "w") as f:
         print(" --- RESULTS --- ", file = f)
         print("Dataset topology: ", ds_kind, file = f)
         print("Runs per dataset: ", nruns, file = f)
-        print("Algorithm: ", algorithm, file = f)
-        print("Operators: ", oper, file = f)
-        print("Initial deployment: ", init_deployment, file = f)
+        print("Algorithm: ", alg, file = f)
+        print("Parameters: ", parameters[alg], file = f)
         print("Notes: ", notes, "\n", file = f)
 
         for ds in ds_selected:
