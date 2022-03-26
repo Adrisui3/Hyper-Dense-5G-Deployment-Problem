@@ -3,15 +3,25 @@ import numpy as np
 class Instance:
     def __init__(self):
         self.size = None
+        
         # id:[cost, range, power]
         self.cells = {}
         self.cells_ids = None
         self.macro_id = None
+        self.init_macrocells = None
+        # For each cell, set of indices where it can be installed
+        # id:set(compatible_locations)
+        self.cells_restrictions = None
+        
+        # Number of users and candidate locations
         self.nusers = None
         self.ncandidates = None
+        
+        # Distance matrices
         self.dmatrix_users_candidates = None
         self.dmatrix_candidates = None
-        self.init_macrocells = None
+
+        # Coordinates
         self.user_locations = None
         self.candidate_locations = None
 
@@ -33,13 +43,8 @@ class Instance:
                 line += 1
             
             self.cells_ids = list(self.cells.keys())
-            
-            # Macro cells are the ones with the longest reach
-            max_range = 0
-            for idx in self.cells_ids:
-                if self.cells[idx][1] > max_range:
-                    max_range = self.cells[idx][1]
-                    self.macro_id = idx
+            # Macrocells are encoded as the biggest id
+            self.macro_id = max(self.cells_ids)
 
             # Distance matrices
             line += 1
@@ -79,7 +84,7 @@ class Instance:
                 self.candidate_locations.append(tuple(cloc))
                 line += 1
     
-    # If init is set to true, it will provide the default solution provided by the instance.
+    # If init is set to true, it will build the default solution provided by the instance.
     # Otherwise, it will generate an empty solution
     def generateInitDeployment(self, init = True):
         return [0 if i not in self.init_macrocells else self.macro_id for i in range(self.ncandidates)] if init else [0 for _ in range(self.ncandidates)]
