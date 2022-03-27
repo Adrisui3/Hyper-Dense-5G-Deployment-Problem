@@ -65,7 +65,9 @@ def deployConnected(current_solution):
         
         in_range_d = [cell_dist[i] for i in in_range]
         f_idx = in_range[in_range_d.index(max(in_range_d))]
-        neighbor[f_idx] = random.choice(cells)
-        break
+        compatible_cells = [cell for cell in cells if f_idx in current_solution.instance().cell_compatibility[cell]]
+        if compatible_cells:
+            neighbor[f_idx] = random.choice(cells)
+            break
     
     return neighbor
