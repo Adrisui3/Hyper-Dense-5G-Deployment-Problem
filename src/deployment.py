@@ -11,11 +11,10 @@ class Deployment:
         self.__winterferences = weights[2]
 
         # Compute maximum cost and maximum interferences
-        self.__max_cost = self.__instance.cells[self.__instance.macro_id][0] * self.__instance.ncandidates if max_cost is None else max_cost
         if max_interferences is None and max_cost is None:
             max_deployment = self.__getMaxDeployment()
             self.__max_interferences = self.__interferencesHelper(max_deployment, self.__coveredUsersHelper(max_deployment))
-            self.__costHelper(max_deployment)
+            self.__max_cost = self.__costHelper(max_deployment)
         else:
             self.__max_interferences = max_interferences
             self.__max_cost = max_cost
