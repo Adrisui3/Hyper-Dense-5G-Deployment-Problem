@@ -12,11 +12,13 @@ class Deployment:
 
         # Compute maximum cost and maximum interferences
         self.__max_cost = self.__instance.cells[self.__instance.macro_id][0] * self.__instance.ncandidates if max_cost is None else max_cost
-        if max_interferences is None:
-            aux_dep = [self.__instance.macro_id]*self.__instance.ncandidates
-            self.__max_interferences = self.__interferencesHelper(aux_dep, self.__coveredUsersHelper(aux_dep))
+        if max_interferences is None and max_cost is None:
+            max_deployment = self.__getMaxDeployment()
+            self.__max_interferences = self.__interferencesHelper(max_deployment, self.__coveredUsersHelper(max_deployment))
+            self.__costHelper(max_deployment)
         else:
             self.__max_interferences = max_interferences
+            self.__max_cost = max_cost
 
     def __getitem__(self, index):
         return self.__deployment[index]
@@ -28,15 +30,15 @@ class Deployment:
         del self.__deployment[index]
     
     def __len__(self):
-        return len(self.__deployment)
+        return self.__instance.ncandidates
     
     def __str__(self):
         return str(self.__deployment)
 
     # I define maximum deployment as the deployment for which each location has the biggest compatible cell installed
     # This is the most expensive with the most interferences solution for an instance
-    def __getMaxDeployment():
-        max_depl = [[] for _ in range(self.__instance.ncandidates)]
+    def __getMaxDeployment(self):
+        max_depl = [[0] for _ in range(self.__instance.ncandidates)]
         for idx in range(self.__instance.ncandidates):
             for cell in self.__instance.cells_ids:
                 if idx in self.__instance.cell_compatibility[cell]:
@@ -60,30 +62,14 @@ class Deployment:
 
         return covered_users
     
-    def copy(self):
-        return Deployment(instance = self.__instance, max_cost = self.__max_cost, 
-                          max_interferences = self.__max_interferences, weights = self.weights(), 
-                          deployment = self.__deployment.copy())
-
-    def coveredUsers(self):        
-        return self.__coveredUsersHelper(self.__deployment)
-
-    def cost(self):
+    def __costHelper(self, deployment):
         cost = 0
-        for cell in self.__deployment:
+        for cell in deployment:
             if cell == 0:
                 continue
             cost += self.__instance.cells[cell][0]
         
         return cost
-
-    # Both coverage and interferences need the set of covered users
-    # It can be sent as a parameter to prevent wasting time computing it twice
-    def coverage(self, nusers_covered = None):
-        if nusers_covered is None:
-            return len(self.coveredUsers()) / self.__instance.nusers
-        else:
-            return nusers_covered / self.__instance.nusers
     
     def __interferencesHelper(self, deployment, cusers):
         interferences = 0
@@ -109,7 +95,21 @@ class Deployment:
             interferences += isum - pmax / min(dmax)**2
         
         return interferences
+    
+    def coveredUsers(self):        
+        return self.__coveredUsersHelper(self.__deployment)
 
+    def cost(self):        
+        return self.__costHelper(self.__deployment)
+
+    # Both coverage and interferences need the set of covered users
+    # It can be sent as a parameter to prevent wasting time computing it twice
+    def coverage(self, nusers_covered = None):
+        if nusers_covered is None:
+            return len(self.coveredUsers()) / self.__instance.nusers
+        else:
+            return nusers_covered / self.__instance.nusers
+    
     def interferences(self, cusers = None):
         covered_users = self.coveredUsers() if cusers is None else cusers
         return self.__interferencesHelper(self.__deployment, covered_users)
@@ -147,7 +147,12 @@ class Deployment:
         
         # If all non-null cells are connected, the solution is feasible
         return all(connected_cells)
-
+    
+    def copy(self):
+        return Deployment(instance = self.__instance, max_cost = self.__max_cost, 
+                          max_interferences = self.__max_interferences, weights = self.weights(), 
+                          deployment = self.__deployment.copy())
+    
     def weights(self):
         return (self.__wcoverage, self.__wcost, self.__winterferences)
 

@@ -6,14 +6,15 @@ import random
 def upgradeCells(current_solution):
     # Given a solution, it will upgrade a cell to a bigger one if possible
     neighbor = current_solution.copy()
-    upgrade_idx = [i for i in range(current_solution.instance().ncandidates) if current_solution[i] != current_solution.instance().macro_id]
+    upgrade_idx = [i for i in range(len(current_solution)) if current_solution[i] != current_solution.instance().macro_id]
 
     if upgrade_idx:
        idx = random.choice(upgrade_idx)
+       compatible_cells = [cell for cell in current_solution.instance().cells_ids if idx in current_solution.instance().cell_compatibility[cell]]
        curr_cell = current_solution[idx]
-       elegible_cells = [cell for cell in current_solution.instance().cells_ids if cell > curr_cell]
-
-       neighbor[idx] = random.choice(elegible_cells)
+       elegible_cells = [cell for cell in compatible_cells if cell > curr_cell]
+       if elegible_cells:
+           neighbor[idx] = random.choice(elegible_cells)
     
     return neighbor
 
@@ -23,9 +24,11 @@ def downgradeCells(current_solution):
     downgrade_idx = current_solution.getNonNullCells()
 
     if downgrade_idx:
+       # Cells which are compatible the selected position
        idx = random.choice(downgrade_idx)
+       compatible_cells = [cell for cell in current_solution.instance().cells_ids if idx in current_solution.instance().cell_compatibility[cell]]
        curr_cell = current_solution[idx]
-       elegible_cells = [cell for cell in current_solution.instance().cells_ids if cell < curr_cell]
+       elegible_cells = [cell for cell in compatible_cells if cell < curr_cell]
        elegible_cells.append(0)
 
        neighbor[idx] = random.choice(elegible_cells)
@@ -38,7 +41,7 @@ def swapCells(current_solution):
     nnull_idx = current_solution.getNonNullCells()
     if nnull_idx:
         idxA = random.choice(nnull_idx)
-        idxB = random.choice([i for i in range(current_solution.instance().ncandidates) if i != idxA])
+        idxB = random.choice([i for i in range(len(current_solution)) if i != idxA])
 
         neighbor[idxA] = current_solution[idxB]
         neighbor[idxB] = current_solution[idxA]
@@ -64,14 +67,5 @@ def deployConnected(current_solution):
         f_idx = in_range[in_range_d.index(max(in_range_d))]
         neighbor[f_idx] = random.choice(cells)
         break
-    
-    return neighbor
-
-def deployMacrocell(current_solution):
-    # Given a solution, it will deploy a macrocell in a random location to improve conectivity
-    neighbor = current_solution.copy()
-    null_idx = current_solution.getNullCells()
-    if null_idx:
-        neighbor[random.choice(null_idx)] = neighbor.instance().macro_id
     
     return neighbor
