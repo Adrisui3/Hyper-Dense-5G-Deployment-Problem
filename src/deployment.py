@@ -33,6 +33,17 @@ class Deployment:
     def __str__(self):
         return str(self.__deployment)
 
+    # I define maximum deployment as the deployment for which each location has the biggest compatible cell installed
+    # This is the most expensive with the most interferences solution for an instance
+    def __getMaxDeployment():
+        max_depl = [[] for _ in range(self.__instance.ncandidates)]
+        for idx in range(self.__instance.ncandidates):
+            for cell in self.__instance.cells_ids:
+                if idx in self.__instance.cell_compatibility[cell]:
+                    max_depl[idx].append(cell)
+        
+        return [max(compatible) for compatible in max_depl]
+
     def instance(self):
         return self.__instance
     
@@ -104,8 +115,16 @@ class Deployment:
         return self.__interferencesHelper(self.__deployment, covered_users)
 
     def isFeasible(self):
+        # A solution is feasible if all cells are compatible with their current locations and also are connected
+
         # Non-null cell indices for the __deployment array
         nncells_idx = self.getNonNullCells()
+        
+        # For every non-null cell, if it is deployed in an incompatible location, the solution is not feasible
+        for idx in nncells_idx:
+            if idx not in self.__instance.cell_compatibility[self.__deployment[idx]]:
+                return False
+        
         # For every non-null cell, true if connected, false if not.
         # Initially, all macrocells are connected. The aim is to find if the others are.
         connected_cells = [True if self.__deployment[idx] == self.__instance.macro_id else False for idx in nncells_idx]

@@ -47,7 +47,7 @@ if __name__ == "__main__":
     oper = [upgradeCells, downgradeCells, swapCells, deployConnected] 
     init_deployment = True
     
-    LSITER = 1000
+    LSITER = 10000
     
     ASITER = 15000
     SEGMENT = 250
@@ -70,6 +70,8 @@ if __name__ == "__main__":
     paths_ds = ["data/uniform/", "data/blobs/"]
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
     path = paths_ds[ds_kind - 1]
+    restricted = input("Compatibility restrictions (y/n): ")
+    path = path + "not-restricted/" if restricted == 'n' else path + "restricted/"
     datasets = os.listdir(path)
     if not datasets:
         print("No datasets detected")
@@ -117,7 +119,7 @@ if __name__ == "__main__":
 
     date = str(datetime.datetime.now())
     date = date.replace(" ", "--")
-    with open("results/" + alg + "-" + date, "w") as f:
+    with open("results/" + alg + "/" + date, "w") as f:
         print(" --- RESULTS --- ", file = f)
         print("Dataset topology: ", ds_kind, file = f)
         print("Runs per dataset: ", nruns, file = f)

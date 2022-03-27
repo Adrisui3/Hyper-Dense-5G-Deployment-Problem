@@ -17,6 +17,7 @@ class InstanceGenerator:
         self.nusers = nusers
         self.ncandidates = ncandidates
         self.distrib = distrib
+        self.macro_id = max([cell[0] for cell in self.cells])
     
     def __euclidean_distance(self, A, B):
         return np.sqrt(pow(A[0] - B[0], 2) + pow(B[1] - A[1], 2))
@@ -31,7 +32,7 @@ class InstanceGenerator:
 
         return users
 
-    def generateInstance(self, file, blobs = False, path = "data/", cluster_std = None, centers = None):
+    def generateInstance(self, file, restrict = False, blobs = False, path = "data/", cluster_std = None, centers = None):
         candidate_locations = []
         deployed_macros = []
         user_locations = []
@@ -41,8 +42,10 @@ class InstanceGenerator:
         # Distances between cells is necessary to grant feasibility
         dmatrix_candidates = [[] for _ in range(self.ncandidates)]
 
+        name = file if not restrict else file + "_R"
         kind = "uniform/" if not blobs else "blobs/"
-        with open(path + kind + file, "w") as f:
+        kind = kind + "restricted/" if restrict else kind + "not-restricted/"
+        with open(path + kind + name, "w") as f:
             print("# Site size (km)", file = f)
             print(self.size, file = f)
             
@@ -58,6 +61,22 @@ class InstanceGenerator:
 
             print("# Number of candidate locations", file = f)
             print(self.ncandidates, file = f)
+
+            # Cell compatibility with locations
+            print("# For every kind of cell: id and list of compatible candidate indices", file = f)
+            cell_compatibility = {}
+            if not restrict:
+                for cell in self.cells:
+                    cell_compatibility[cell[0]] = list(range(self.ncandidates))
+                    print(' '.join(map(str, [cell[0]] + cell_compatibility[cell[0]])), file = f)
+            else:
+                for cell in self.cells:
+                    ncompatible_idx = random.randint(1, self.ncandidates)
+                    compatible_idx = random.sample(range(self.ncandidates), k = ncompatible_idx)
+                    compatible_idx.sort()
+                    cell_compatibility[cell[0]] = compatible_idx
+                    print(' '.join(map(str, [cell[0]] + cell_compatibility[cell[0]])), file = f)
+
 
             # Random generation of locations for both users and candidate points
             if not blobs:
@@ -88,8 +107,10 @@ class InstanceGenerator:
             # Random deployment of macrocells emulating a 4G network
             # Between 5-7% of candidate locations will have a macrocell
             perc = random.uniform(0.05, 0.07)
-            deployed_macros = random.sample(range(self.ncandidates), math.ceil(self.ncandidates*perc))
-            print("# Candidate locations' indices where macrocells are deployed", file = f)
+            compatible_macro = cell_compatibility[self.macro_id]
+            deployed_macros = random.sample(compatible_macro, math.ceil(len(compatible_macro)*perc))
+            deployed_macros.sort()
+            print("# Candidate indices where macrocells are already deployed", file = f)
             print(' '.join(map(str, deployed_macros)), file = f)
             
             # Both users and candidates coordinates

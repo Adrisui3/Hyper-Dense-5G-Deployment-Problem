@@ -11,7 +11,7 @@ class Instance:
         self.init_macrocells = None
         # For each cell, set of indices where it can be installed
         # id:set(compatible_locations)
-        self.cells_restrictions = None
+        self.cell_compatibility = None
         
         # Number of users and candidate locations
         self.nusers = None
@@ -46,15 +46,26 @@ class Instance:
             # Macrocells are encoded as the biggest id
             self.macro_id = max(self.cells_ids)
 
-            # Distance matrices
+            # Number of users and candidates
             line += 1
             self.nusers = int(ds[line])
             line += 2
             self.ncandidates = int(ds[line])
-            
+            line += 2
+
+            # List of compatible indices per cell kind
+            self.cell_compatibility = {}
+            for _ in range(ncells):
+                compat_data = list(map(int, ds[line].split()))
+                idx = compat_data[0]
+                compat_data.pop(0)
+                self.cell_compatibility[idx] = set(compat_data)
+                line += 1
+
+            # Distance matrices
             self.dmatrix_users_candidates = [[] for _ in range(self.nusers)]
             self.dmatrix_candidates = [[] for _ in range(self.ncandidates)]
-            line += 2
+            line += 1
             for i in range(self.nusers):
                 self.dmatrix_users_candidates[i] = list(map(float, ds[line].split()))
                 line+=1
