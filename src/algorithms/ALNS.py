@@ -55,10 +55,10 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
         
         # Update weights
         if i % segment == 0:
-            for i in range(nopers):
-                if times_exe[i] == 0:
+            for j in range(nopers):
+                if times_exe[j] == 0:
                     continue
-                weights[i] = weights[i] * (1 - r) + r * (scores[i] / times_exe[i])
+                weights[j] = weights[j] * (1 - r) + r * (scores[j] / times_exe[j])
             
             norm = sum(weights)
             weights = [weight / norm for weight in weights]
@@ -68,7 +68,7 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
     return best_solution, best_objective
 
 # ALNS using temperature based acceptance criterion
-def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_ini = 6, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
+def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_ini = 6, alpha = 0.999, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
@@ -120,15 +120,15 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_
         
         # Update weights
         if i % segment == 0:
-            for i in range(nopers):
-                if times_exe[i] == 0:
+            for j in range(nopers):
+                if times_exe[j] == 0:
                     continue
-                weights[i] = weights[i] * (1 - r) + r * (scores[i] / times_exe[i])
+                weights[j] = weights[j] * (1 - r) + r * (scores[j] / times_exe[j])
             
             norm = sum(weights)
             weights = [weight / norm for weight in weights]
         
-        temp = temp * alpha if temp > T_end else T_end
-        #print("Current iteration: ", i, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights), " -- Temperature: ", temp)
+        temp = temp * alpha
+        print("Iteration: ", i, "-- Temperature: ", temp, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
 
     return best_solution, best_objective

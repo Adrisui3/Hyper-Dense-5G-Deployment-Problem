@@ -37,7 +37,7 @@ def algorithm(algorithm, parameters, instance):
             t_end = time.time()
         case "ALNS-T":
             t_ini = time.time()
-            best_solution, best_objective = adaptiveSearchTemperature(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"], segment = parameters["segment"], r = parameters["r"])
+            best_solution, best_objective = adaptiveSearchTemperature(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"], segment = parameters["segment"], r = parameters["r"], t_ini = parameters["t_ini"], alpha = parameters["alpha"])
             t_end = time.time()
 
     return best_solution, best_objective, t_end - t_ini
@@ -51,7 +51,6 @@ if __name__ == "__main__":
     
     ASITER = 20000
     AS_T_INI = 6
-    AS_T_END = 0.0001
     AS_ALPHA = 0.9995
     SEGMENT = 350
     R = 0.05
@@ -67,7 +66,7 @@ if __name__ == "__main__":
     sat_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
     sap_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper}
     alns_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "init":init_deployment, "oper":oper}
-    alnst_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "t_end":AS_T_END, "alpha":AS_ALPHA, "init":init_deployment, "oper":oper}
+    alnst_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "alpha":AS_ALPHA, "init":init_deployment, "oper":oper}
     parameters = {"LS":ls_params, "SA":sa_params, "SA-T":sat_params, "SA-P":sap_params, "ALNS":alns_params, "ALNS-T":alnst_params, "init":init_deployment, "oper":oper}
 
     paths_ds = ["data/uniform/", "data/blobs/"]
