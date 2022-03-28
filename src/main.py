@@ -55,10 +55,19 @@ if __name__ == "__main__":
     SEGMENT = 350
     R = 0.05
 
+
+    '''
+    Pmax = 90%      // Pmax = 85%
+    T_INI = 9.4     // T_INI = 6.1
+
+    Pmin = 5%
+    T_END = 0.0034
+
+    '''
     T_INI = 10
     T_END = 0.0001
     ALPHA = 0.999
-    N_JOBS = 4
+    N_JOBS = -1
     N_NEIGHBORS = 3
 
     ls_params = {"iter":LSITER, "init":init_deployment, "oper":oper}
@@ -80,58 +89,63 @@ if __name__ == "__main__":
         exit()
     datasets.sort()
 
-    print("Datasets available: ", datasets)
-    ds_selected = list(map(int, input("Datasets selected: ").split()))
+    print("Datasets available: ", ', '.join(datasets))
+    ds_selected = list(map(int, input("Selected datasets: ").split()))
     ds_selected = [datasets[i-1] for i in ds_selected]
     
-    alg = input("Algorithm (LS, SA, SA-T, SA-P, ALNS, ALNS-T): ")
+    algorithms = ["LS", "SA", "SA-T", "SA-P", "ALNS", "ALNS-T"]
+    print("Algorithms available:", ', '.join(algorithms))
+    alg_selected = list(map(int, input("Selected algorithms: ").split()))
+    alg_selected = [algorithms[i-1] for i in alg_selected]
+
     nruns = int(input("Number of runs: "))
     notes = input("Notes: ")
 
     results = {}
-
-    for ds in ds_selected:
-        print("Current dataset: ", ds)
-        instance = Instance()
-        instance.loadInstance(file = ds, path = path)
-        
-        objectives = []
-        split_objectives = []
-        runtimes = []
-        solutions = []
-
-        for i in range(nruns):
-            best_solution, best_objective, runtime = algorithm(algorithm = alg, parameters = parameters[alg], instance = instance)
-
-            if not best_solution.isFeasible() or best_solution.objective() != best_objective:
-                print("EXECUTION FAILED IN DATASET: ", ds)
-                exit()
+    for alg in alg_selected:
+        print("Current algorithm: ", alg)
+        for ds in ds_selected:
+            print("     Current dataset: ", ds)
+            instance = Instance()
+            instance.loadInstance(file = ds, path = path)
             
-            solutions.append(best_solution)
-            objectives.append(best_objective)
-            split_objectives.append(best_solution.splitObjective())
-            runtimes.append(runtime)
+            objectives = []
+            split_objectives = []
+            runtimes = []
+            solutions = []
 
-            print("     Iteration number:", i, "-", "Runtime:", runtime, "seconds", "-", "Best objective: ", best_objective)
-        
-        overall_obj = max(objectives)
-        overall_sol = solutions[objectives.index(overall_obj)]
-        split_res = list(map(np.mean, zip(*split_objectives)))
-        results[ds] = [overall_sol, np.mean(objectives), np.std(objectives), split_res[0], split_res[1], split_res[2], np.mean(runtimes)]
+            for i in range(nruns):
+                best_solution, best_objective, runtime = algorithm(algorithm = alg, parameters = parameters[alg], instance = instance)
 
-    date = str(datetime.datetime.now())
-    date = date.replace(" ", "--")
-    with open("results/" + alg + "/" + date, "w") as f:
-        print(" --- RESULTS --- ", file = f)
-        print("Dataset topology: ", ds_kind, file = f)
-        print("Runs per dataset: ", nruns, file = f)
-        print("Algorithm: ", alg, file = f)
-        print("Parameters: ", parameters[alg], file = f)
-        print("Notes: ", notes, "\n", file = f)
+                if not best_solution.isFeasible() or best_solution.objective() != best_objective:
+                    print("EXECUTION FAILED IN DATASET: ", ds)
+                    exit()
+                
+                solutions.append(best_solution)
+                objectives.append(best_objective)
+                split_objectives.append(best_solution.splitObjective())
+                runtimes.append(runtime)
 
-        for ds in ds_selected:
-            print(ds, ":", results[ds][1:], file = f)
-        
-        print("\n--- BEST FOUND SOLUTIONS --- \n", file = f)
-        for ds in ds_selected:
-            print(ds, ":", results[ds][0], file = f)
+                print("          Iteration number:", i, "-", "Runtime:", runtime, "seconds", "-", "Best objective: ", best_objective)
+            
+            overall_obj = max(objectives)
+            overall_sol = solutions[objectives.index(overall_obj)]
+            split_res = list(map(np.mean, zip(*split_objectives)))
+            results[ds] = [overall_sol, np.mean(objectives), np.std(objectives), split_res[0], split_res[1], split_res[2], np.mean(runtimes)]
+
+        date = str(datetime.datetime.now())
+        date = date.replace(" ", "--")
+        with open("results/" + alg + "/" + date, "w") as f:
+            print(" --- RESULTS --- ", file = f)
+            print("Dataset topology: ", ds_kind, file = f)
+            print("Runs per dataset: ", nruns, file = f)
+            print("Algorithm: ", alg, file = f)
+            print("Parameters: ", parameters[alg], file = f)
+            print("Notes: ", notes, "\n", file = f)
+
+            for ds in ds_selected:
+                print(ds, ":", results[ds][1:], file = f)
+            
+            print("\n--- BEST FOUND SOLUTIONS --- \n", file = f)
+            for ds in ds_selected:
+                print(ds, ":", results[ds][0], file = f)
