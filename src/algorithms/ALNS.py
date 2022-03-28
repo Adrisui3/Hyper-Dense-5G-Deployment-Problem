@@ -129,6 +129,6 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_
             weights = [weight / norm for weight in weights]
         
         temp = temp * alpha
-        print("Iteration: ", i, "-- Temperature: ", temp, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
+        #print("Iteration: ", i, "-- Temperature: ", temp, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
 
     return best_solution, best_objective

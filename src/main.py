@@ -37,7 +37,7 @@ def algorithm(algorithm, parameters, instance):
             t_end = time.time()
         case "ALNS-T":
             t_ini = time.time()
-            best_solution, best_objective = adaptiveSearchTemperature(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"], segment = parameters["segment"], r = parameters["r"], t_ini = parameters["t_ini"], alpha = parameters["alpha"])
+            best_solution, best_objective = adaptiveSearchTemperature(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"], segment = parameters["segment"], r = parameters["r"], T_ini = parameters["t_ini"], alpha = parameters["alpha"])
             t_end = time.time()
 
     return best_solution, best_objective, t_end - t_ini
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     LSITER = 10000
     
     ASITER = 20000
-    AS_T_INI = 6
+    AS_T_INI = 10
     AS_ALPHA = 0.9995
     SEGMENT = 350
     R = 0.05
