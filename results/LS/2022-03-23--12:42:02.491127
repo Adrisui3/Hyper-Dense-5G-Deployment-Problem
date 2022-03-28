@@ -1,10 +1,9 @@
  --- RESULTS --- 
 Dataset topology:  1
 Runs per dataset:  10
-Algorithm:  Local Search
-Operators:  [<function upgradeCells at 0x7fd3590b1fc0>, <function downgradeCells at 0x7fd3590b2050>, <function swapCells at 0x7fd3590b20e0>, <function deployConnected at 0x7fd3590b2170>]
-Initial deployment:  True
-Notes:  10000 
+Algorithm:  LS
+Parameters:  {'iter': 10000, 'init': True, 'oper': [<function upgradeCells at 0x7f26516aa170>, <function downgradeCells at 0x7f26516aa200>, <function swapCells at 0x7f26516aa290>, <function deployConnected at 0x7f26516aa320>]}
+Notes:  - 
 
 DS1_U : [2.777063107088332, 0.012680737671112404, 0.9555, 1412.5, 30.758488393050868, 23.156284189224245]
 DS2_U : [2.891038780648854, 0.008476868391890782, 0.9921999999999999, 1585.0, 48.109685162338465, 34.72861251831055]

@@ -49,8 +49,11 @@ if __name__ == "__main__":
     
     LSITER = 10000
     
-    ASITER = 15000
-    SEGMENT = 250
+    ASITER = 20000
+    AS_T_INI = 6
+    AS_T_END = 0.0001
+    AS_ALPHA = 0.9995
+    SEGMENT = 350
     R = 0.05
 
     T_INI = 10
@@ -64,7 +67,7 @@ if __name__ == "__main__":
     sat_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
     sap_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper}
     alns_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "init":init_deployment, "oper":oper}
-    alnst_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "t_ini":T_INI, "t_end":T_END, "alpha":ALPHA, "init":init_deployment, "oper":oper}
+    alnst_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "t_end":AS_T_END, "alpha":AS_ALPHA, "init":init_deployment, "oper":oper}
     parameters = {"LS":ls_params, "SA":sa_params, "SA-T":sat_params, "SA-P":sap_params, "ALNS":alns_params, "ALNS-T":alnst_params, "init":init_deployment, "oper":oper}
 
     paths_ds = ["data/uniform/", "data/blobs/"]
