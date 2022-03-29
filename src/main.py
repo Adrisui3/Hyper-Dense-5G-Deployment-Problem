@@ -50,8 +50,8 @@ if __name__ == "__main__":
     LSITER = 10000
     
     ASITER = 20000
-    AS_T_INI = 10
-    AS_ALPHA = 0.9995
+    AS_T_INI = 9.4
+    AS_ALPHA = 0.999
     SEGMENT = 350
     R = 0.05
 
