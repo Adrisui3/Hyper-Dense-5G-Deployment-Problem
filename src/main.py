@@ -78,6 +78,11 @@ if __name__ == "__main__":
     alnst_params = {"iter":ASITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "alpha":AS_ALPHA, "init":init_deployment, "oper":oper}
     parameters = {"LS":ls_params, "SA":sa_params, "SA-T":sat_params, "SA-P":sap_params, "ALNS":alns_params, "ALNS-T":alnst_params, "init":init_deployment, "oper":oper}
 
+    float_p = {'t_ini', 't_end', 'alpha', 'r'}
+    int_p = {'iter', 'n_jobs', 'n_neighbors', 'segment'}
+    bool_p = {'init'}
+
+
     paths_ds = ["data/uniform/", "data/blobs/"]
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
     path = paths_ds[ds_kind - 1]
@@ -104,6 +109,19 @@ if __name__ == "__main__":
     results = {}
     for alg in alg_selected:
         print("Current algorithm: ", alg)
+        print("Loaded parameters: ", parameters[alg])
+        d_param = input("Change loaded parameters? (y/n): ")
+        if d_param == "y":
+            for key in parameters[alg].keys():
+                if key != 'oper' and key != 'instance':
+                    if key in float_p:
+                        parameters[alg][key] = float(input(key + ": "))
+                    elif key in bool_p:
+                        parameters[alg][key] = input(key + ": ") == 'T'
+                    elif key in int_p:
+                        parameters[alg][key] = int(input(key + ": "))
+            print("Updated parameters: ", parameters[alg], "\n")
+                        
         for ds in ds_selected:
             print("     Current dataset: ", ds)
             instance = Instance()
