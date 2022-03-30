@@ -5,7 +5,7 @@ import copy
 class Deployment:
     def __init__(self, instance, max_cost = None, max_interferences = None, weights = (1, 1, 1), deployment = None, init = True):
         self.__instance = instance
-        self.__deployment = deployment if deployment is not None else self.__instance.generateInitDeployment(init = init)
+        self.__deployment = deployment if deployment is not None else self.__instance.getInitDeployment(init = init)
         self.__wcoverage = weights[0]        
         self.__wcost = weights[1]
         self.__winterferences = weights[2]

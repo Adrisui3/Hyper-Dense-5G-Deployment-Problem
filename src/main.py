@@ -82,7 +82,7 @@ if __name__ == "__main__":
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
     path = paths_ds[ds_kind - 1]
     restricted = input("Compatibility restrictions (y/n): ")
-    path = path + "not-restricted/" if restricted == 'n' else path + "restricted/"
+    path = path + "non-restricted/" if restricted == 'n' else path + "restricted/"
     datasets = os.listdir(path)
     if not datasets:
         print("No datasets detected")

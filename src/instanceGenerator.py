@@ -44,7 +44,7 @@ class InstanceGenerator:
 
         name = file if not restrict else file + "_R"
         kind = "uniform/" if not blobs else "blobs/"
-        kind = kind + "restricted/" if restrict else kind + "not-restricted/"
+        kind = kind + "restricted/" if restrict else kind + "non-restricted/"
         with open(path + kind + name, "w") as f:
             print("# Site size (km)", file = f)
             print(self.size, file = f)

@@ -8,7 +8,7 @@ class Instance:
         self.cells = {}
         self.cells_ids = None
         self.macro_id = None
-        self.init_macrocells = None
+        self.init_deployment = None
         # For each cell, set of indices where it can be installed
         # id:set(compatible_locations)
         self.cell_compatibility = None
@@ -77,7 +77,13 @@ class Instance:
             
             # Initial deployment data
             line += 1
-            self.init_macrocells = set(map(int, ds[line].split()))
+            iDeployment_line = ds[line]
+            self.init_deployment = [0 for _ in range(self.ncandidates)]
+            if len(iDeployment_line) > 0:
+                init_macrocells = list(map(int, iDeployment_line.split()))
+                for idx in init_macrocells:
+                    self.init_deployment[idx] = self.macro_id
+            
             line += 2
 
             # Load user locations
@@ -97,5 +103,5 @@ class Instance:
     
     # If init is set to true, it will build the default solution provided by the instance.
     # Otherwise, it will generate an empty solution
-    def generateInitDeployment(self, init = True):
-        return [0 if i not in self.init_macrocells else self.macro_id for i in range(self.ncandidates)] if init else [0 for _ in range(self.ncandidates)]
+    def getInitDeployment(self, init = True):
+        return self.init_deployment if init else [0 for _ in range(self.ncandidates)]
