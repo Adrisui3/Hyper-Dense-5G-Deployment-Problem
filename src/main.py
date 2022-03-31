@@ -64,10 +64,10 @@ if __name__ == "__main__":
     T_END = 0.0034
 
     '''
-    T_INI = 10
-    T_END = 0.0001
+    T_INI = 6.1
+    T_END = 0.0034
     ALPHA = 0.999
-    N_JOBS = -1
+    N_JOBS = 4
     N_NEIGHBORS = 3
 
     ls_params = {"iter":LSITER, "init":init_deployment, "oper":oper}
