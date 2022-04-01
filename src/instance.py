@@ -1,4 +1,6 @@
 import numpy as np
+import kmlParser
+import shapely
 
 class Instance:
     def __init__(self):

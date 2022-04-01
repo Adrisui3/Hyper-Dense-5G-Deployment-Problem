@@ -12,6 +12,16 @@ import time
 import os
 import datetime
 
+
+
+# DISCLAIMER: This file is aimed for testing and it should not be used to generate solutions.
+# If you really want to solve a problem using these algorithms, I encourage you to
+# write your own framework. 
+#
+# On the other hand, this file will suffer changes almost every commit.
+# I do not recommend to follow those changes, since they will generaly be irrelevant
+# for the project.
+
 def algorithm(algorithm, parameters, instance):
     # Yes, this is Python code
     match algorithm:
@@ -66,8 +76,8 @@ if __name__ == "__main__":
     '''
     T_INI = 6.1
     T_END = 0.0034
-    ALPHA = 0.999
-    N_JOBS = 4
+    ALPHA = 0.9995
+    N_JOBS = -1
     N_NEIGHBORS = 3
 
     ls_params = {"iter":LSITER, "init":init_deployment, "oper":oper}
