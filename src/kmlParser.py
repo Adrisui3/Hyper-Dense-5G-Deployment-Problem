@@ -30,4 +30,4 @@ class KMLParser:
         # Verify if any placemark is not placed inside the polygon
         for c_pm in candidate_placemarks:
             if not polygon.contains(c_pm.geometry):
-                print("ERROR: ", c_pm.geometry, " placemark is outside the area of interest!")
+                print("ERROR: ", c_pm.geometry, " placemark is outside the area of interest!")    
