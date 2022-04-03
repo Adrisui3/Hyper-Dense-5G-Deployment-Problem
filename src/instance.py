@@ -4,13 +4,15 @@ import shapely
 
 class Instance:
     def __init__(self):
-        self.size = None
+        
+        self.polygon = None
         
         # id:[cost, range, power]
         self.cells = {}
         self.cells_ids = None
         self.macro_id = None
         self.init_deployment = None
+        
         # For each cell, set of indices where it can be installed
         # id:set(compatible_locations)
         self.cell_compatibility = None
@@ -32,8 +34,9 @@ class Instance:
             ds = f.readlines()
             line = 1
 
-            # AoI dimensions
-            self.size = float(ds[line])
+            # AoI
+            self.polygon = float(ds[line])
+            #self.polygon = shapely.wkt.loads(ds[line])
             line += 2
 
             # Load cells' data
