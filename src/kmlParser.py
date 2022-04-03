@@ -1,13 +1,16 @@
 import numpy as np
+import math
+import random
 import fastkml
 import shapely
 from shapely.ops import triangulate
-import matplotlib.pyplot as plt
 
-# KML files are built using Google Earth
-# These must contain a polygon representing the area of interest.
-# This polygon must contain the number of users inside the area in the description box.
-# 
+'''
+    KML files are built using Google Earth.
+    Each file must contain a polygon representing the area of interest.
+    All candidate locations, represented by placemarks, must be inside
+    the polygon.
+'''
 
 class KMLParser:
     
@@ -45,24 +48,40 @@ class KMLParser:
         return list(map(int, desc.split()))
     
     def __distributeUsers(self, polygon, nusers):
-        # Areas of interest are abritrary polygons, thus random
-        # user locations cannot be generated as usual.
-        # An option could be to enclose the polygon inside a rectangle defined by minx, maxx, miny, maxy,
-        # and generate random users inside that area, and only keeping those inside the area of interest
-        # until the number of required users is met.
-        # In order to reduce the number of invalid users, Delunay triangulation can be used to
-        # split the area of interest in triangles and use the aforementioned procedure to generate
-        # users inside those triangles, granting at most 50% invalid users.
+        ''' 
+            Uniformly distributes users inside the polygon.
+            
+            In order to prevent discarding too many users that
+            may be generated outside the polygon, it performs Delaunay
+            triangulation on it and then generates users inside a bounding
+            box for each triangle. This ensures that the number of discarded
+            users is minimum.
+        '''
 
+        user_locations = []
+        p_area = polygon.area
+        triangles = triangulate(polygon)
+        for t in triangles:
+            minx, miny, maxx, maxy = t.bounds
+            bbox = shapely.geometry.box(minx, miny, maxx, maxy)
 
+            nusersTriangle = math.ceil((t.area / p_area) * nusers)
+            nusersInside = 0
+            while nusersInside < nusersTriangle:
+                user = shapely.geometry.Point((random.uniform(minx, maxx), random.uniform(miny, maxy)))
+                if polygon.contains(user):
+                    user_locations.append((user.x, user.y))
+                    nusersInside += 1
 
+        while len(user_locations) - nusers > 0:
+            user_locations.pop()
 
-        return None
+        return user_locations
     
     # Read a KML file and return an initialized Instance object
-    def loadKML(self, path, name):
+    def loadKML(self, path, file):
         # KML string loading
-        with open(path + name, 'rt', encoding="utf-8") as kml_doc:
+        with open(path + file, 'rt', encoding="utf-8") as kml_doc:
             ds_string = kml_doc.read().encode()
         
         ds = fastkml.kml.KML()
@@ -122,12 +141,29 @@ class KMLParser:
         ncandidates = len(candidate_locations)
 
         # Uniformly distribute nusers over the area of interest.
-        user_locations = self.__distributeUsers(polygon, nusers)
+        user_locations = self.__distributeUsers(polygon.geometry, nusers)
 
+        # Compute distance matrices
+        dmatrix_users_candidates = [[] for _ in range(nusers)]
+        dmatrix_candidates = [[] for _ in range(ncandidates)]
+        for i in range(nusers):
+            for j in range(ncandidates):
+                dist = self.__distance(user_locations[i], candidate_locations[j])
+                dmatrix_users_candidates[i].append(dist)
 
+        for i in range(ncandidates):
+            for j in range(ncandidates):
+                dist = 0 if i == j else self.__distance(candidate_locations[i], candidate_locations[j])
+                dmatrix_candidates[i].append(dist)
+        
+        cells = {cell[0]:cell[1:] for cell in self.cells}
+        cells_ids = cells.keys()
+        macro_id = max(cells_ids)
 
+        init_deployment = [0 for _ in range(ncandidates)]
 
-
-
-
-
+        return {"polygon":polygon.geometry, "cells":cells, "cells_ids":cells_ids, "macro_id":macro_id,
+                "init_deployment":init_deployment, "cell_compatibility":cell_compatibility,
+                "nusers":nusers, "ncandidates":ncandidates, "dmatrix_users_candidates":dmatrix_users_candidates,
+                "dmatrix_candidates":dmatrix_candidates, "user_locations":user_locations, 
+                "candidate_locations":candidate_locations}

@@ -1,33 +1,36 @@
 import numpy as np
-import kmlParser
+from kmlParser import KMLParser
 import shapely
 
 class Instance:
-    def __init__(self):
+    def __init__(self, polygon = None, cells = {}, cells_ids = None, macro_id = None, init_deployment = None, 
+                cell_compatibility = None, nusers = None, ncandidates = None, dmatrix_users_candidates = None, 
+                dmatrix_candidates = None, user_locations = None, candidate_locations = None):
         
-        self.polygon = None
+        # Area of interest
+        self.polygon = polygon
         
         # id:[cost, range, power]
-        self.cells = {}
-        self.cells_ids = None
-        self.macro_id = None
-        self.init_deployment = None
+        self.cells = cells
+        self.cells_ids = cells_ids
+        self.macro_id = macro_id
+        self.init_deployment = init_deployment
         
         # For each cell, set of indices where it can be installed
         # id:set(compatible_locations)
-        self.cell_compatibility = None
+        self.cell_compatibility = cell_compatibility
         
         # Number of users and candidate locations
-        self.nusers = None
-        self.ncandidates = None
+        self.nusers = nusers
+        self.ncandidates = ncandidates
         
         # Distance matrices
-        self.dmatrix_users_candidates = None
-        self.dmatrix_candidates = None
+        self.dmatrix_users_candidates = dmatrix_users_candidates
+        self.dmatrix_candidates = dmatrix_candidates
 
         # Coordinates
-        self.user_locations = None
-        self.candidate_locations = None
+        self.user_locations = user_locations
+        self.candidate_locations = candidate_locations
 
     def loadInstance(self, file, path):
         with open(path + file) as f:
@@ -106,6 +109,22 @@ class Instance:
                 self.candidate_locations.append(tuple(cloc))
                 line += 1
     
+    def loadKML(self, path, file):
+        kml = KMLParser().loadKML(path = path, file = file)
+        
+        self.polygon = kml["polygon"]
+        self.cells = kml["cells"]
+        self.cells_ids = kml["cells_ids"]
+        self.macro_id = kml["macro_id"]
+        self.init_deployment = kml["init_deployment"]
+        self.cell_compatibility = kml["cell_compatibility"]
+        self.nusers = kml["nusers"]
+        self.ncandidates = kml["ncandidates"]
+        self.dmatrix_users_candidates = kml["dmatrix_users_candidates"]
+        self.dmatrix_candidates = kml["dmatrix_candidates"]
+        self.user_locations = kml["user_locations"]
+        self.candidate_locations = kml["candidate_locations"]
+
     # If init is set to true, it will build the default solution provided by the instance.
     # Otherwise, it will generate an empty solution
     def getInitDeployment(self, init = True):
