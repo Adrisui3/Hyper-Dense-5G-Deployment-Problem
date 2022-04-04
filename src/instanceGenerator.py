@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import math
+import shapely.geometry
 from sklearn.datasets import make_blobs
 
 # Instance generator for the Hyper-Dense Deployment Problem.
@@ -46,8 +47,8 @@ class InstanceGenerator:
         kind = "uniform/" if not blobs else "blobs/"
         kind = kind + "restricted/" if restrict else kind + "non-restricted/"
         with open(path + kind + name, "w") as f:
-            print("# Site size (km)", file = f)
-            print(self.size, file = f)
+            print("# Area of Interest", file = f)
+            print(shapely.geometry.box(0, 0, self.size, self.size), file = f)
             
             print("# Number of cells", file = f)
             print(len(self.cells), file = f)

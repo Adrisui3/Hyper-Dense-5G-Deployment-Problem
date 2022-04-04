@@ -1,6 +1,6 @@
 import numpy as np
 from kmlParser import KMLParser
-import shapely
+import shapely.wkt
 
 class Instance:
     def __init__(self, polygon = None, cells = {}, cells_ids = None, macro_id = None, init_deployment = None, 
@@ -38,8 +38,7 @@ class Instance:
             line = 1
 
             # AoI
-            self.polygon = float(ds[line])
-            #self.polygon = shapely.wkt.loads(ds[line])
+            self.polygon = shapely.wkt.loads(ds[line])
             line += 2
 
             # Load cells' data

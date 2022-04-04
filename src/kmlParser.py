@@ -78,7 +78,7 @@ class KMLParser:
 
         return user_locations
     
-    # Read a KML file and return an initialized Instance object
+    # Read a KML file and return its content in a dictionary used to initialize an Instance object
     def loadKML(self, path, file):
         # KML string loading
         with open(path + file, 'rt', encoding="utf-8") as kml_doc:

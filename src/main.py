@@ -92,12 +92,14 @@ if __name__ == "__main__":
     int_p = {'iter', 'n_jobs', 'n_neighbors', 'segment'}
     bool_p = {'init'}
 
-
-    paths_ds = ["data/uniform/", "data/blobs/"]
-    ds_kind = int(input("Dataset topology (1-uniform, 2-blobs): "))
+    paths_ds = ["data/uniform/", "data/blobs/", "data/kml/"]
+    ds_kind = int(input("Dataset topology (1-uniform, 2-blobs, 3-KML): "))
     path = paths_ds[ds_kind - 1]
-    restricted = input("Compatibility restrictions (y/n): ")
-    path = path + "non-restricted/" if restricted == 'n' else path + "restricted/"
+    
+    if ds_kind != 3:
+        restricted = input("Compatibility restrictions (y/n): ")
+        path = path + "non-restricted/" if restricted == 'n' else path + "restricted/"
+    
     datasets = os.listdir(path)
     if not datasets:
         print("No datasets detected")
@@ -115,10 +117,10 @@ if __name__ == "__main__":
 
     nruns = int(input("Number of runs: "))
     notes = input("Notes: ")
-
-    results = {}
+    
+    print("--- PARAMETER SELECTION ---")
     for alg in alg_selected:
-        print("Current algorithm: ", alg)
+        print("Algorithm: ", alg)
         print("Loaded parameters: ", parameters[alg])
         d_param = input("Change loaded parameters? (y/n): ")
         if d_param == "y":
@@ -131,11 +133,19 @@ if __name__ == "__main__":
                     elif key in int_p:
                         parameters[alg][key] = int(input(key + ": "))
             print("Updated parameters: ", parameters[alg], "\n")
+
+    results = {}
+    print("--- SIMULATION ---")
+    for alg in alg_selected:
+        print("Current algorithm: ", alg)
                         
         for ds in ds_selected:
             print("     Current dataset: ", ds)
             instance = Instance()
-            instance.loadInstance(file = ds, path = path)
+            if ds_kind != 3:
+                instance.loadInstance(file = ds, path = path)
+            else:
+                instance.loadKML(path = path, file = ds)
             
             objectives = []
             split_objectives = []
