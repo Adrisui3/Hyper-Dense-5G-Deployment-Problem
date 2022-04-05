@@ -40,18 +40,19 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
             delta = feasible_solutions[incumbent.immutableDeployment()] - feasible_solutions[current_solution.immutableDeployment()]
             if delta < 0:
                 # If the solution is an improvement, +2 points
-                scores[oper_idx] += 2
+                scores[oper_idx] += 1
                 incumbent = current_solution
                 if feasible_solutions[best_solution.immutableDeployment()] < feasible_solutions[incumbent.immutableDeployment()]:
                     best_solution = incumbent
                     best_objective = feasible_solutions[incumbent.immutableDeployment()]
                     # If the solution is the new best, +3 points
-                    scores[oper_idx] += 3
+                    scores[oper_idx] += 1
             elif  best_objective - 0.2 * ((iter - i) / iter) * best_objective < feasible_solutions[current_solution.immutableDeployment()]:
                 incumbent = current_solution
         else:
             if current_solution.immutableDeployment() not in infeasible_solutions:
                 infeasible_solutions.add(current_solution.immutableDeployment())
+            scores[oper_idx] -= 1
         
         # Update weights
         if i % segment == 0:
@@ -105,18 +106,19 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_
             delta = feasible_solutions[incumbent.immutableDeployment()] - feasible_solutions[current_solution.immutableDeployment()]
             if delta < 0:
                 # If the solution is an improvement, +2 points
-                scores[oper_idx] += 2
+                scores[oper_idx] += 1
                 incumbent = current_solution
                 if feasible_solutions[best_solution.immutableDeployment()] < feasible_solutions[incumbent.immutableDeployment()]:
                     best_solution = incumbent
                     best_objective = feasible_solutions[incumbent.immutableDeployment()]
                     # If the solution is the new best, +3 points
-                    scores[oper_idx] += 3
+                    scores[oper_idx] += 1
             elif  random.uniform(0, 1) < np.exp(-delta/temp):
                 incumbent = current_solution
         else:
             if current_solution.immutableDeployment() not in infeasible_solutions:
                 infeasible_solutions.add(current_solution.immutableDeployment())
+            scores[oper_idx] -= 1
         
         # Update weights
         if i % segment == 0:
