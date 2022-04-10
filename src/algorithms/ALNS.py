@@ -4,7 +4,7 @@ from operators import *
 import random
 import numpy as np
 
-def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = (1, 1, 1)):
+def adaptiveSearch(problem_instance, oper, init, iter, segment, r, beta, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
@@ -30,7 +30,6 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
         else:
             feasible = current_solution.isFeasible()
 
-
         if feasible:            
             # If the solution is feasible and not visited, +1 point
             if current_solution.immutableDeployment() not in feasible_solutions:
@@ -47,8 +46,10 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
                     best_objective = feasible_solutions[incumbent.immutableDeployment()]
                     # If the solution is the new best, +3 points
                     scores[oper_idx] += 1
-            elif  best_objective - 0.2 * ((iter - i) / iter) * best_objective < feasible_solutions[current_solution.immutableDeployment()]:
+            elif  best_objective - beta * ((iter - i) / iter) * best_objective < feasible_solutions[current_solution.immutableDeployment()]:
                 incumbent = current_solution
+            else:
+                scores[oper_idx] -= 1
         else:
             if current_solution.immutableDeployment() not in infeasible_solutions:
                 infeasible_solutions.add(current_solution.immutableDeployment())
@@ -100,7 +101,6 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_
         else:
             feasible = current_solution.isFeasible()
 
-
         if feasible:
             # If the solution is feasible and not visited, +1 point
             if current_solution.immutableDeployment() not in feasible_solutions:
@@ -119,6 +119,8 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_
                     scores[oper_idx] += 1
             elif  random.uniform(0, 1) < np.exp(-delta/temp):
                 incumbent = current_solution
+            else:
+                scores[oper_idx] -= 1
         else:
             if current_solution.immutableDeployment() not in infeasible_solutions:
                 infeasible_solutions.add(current_solution.immutableDeployment())
