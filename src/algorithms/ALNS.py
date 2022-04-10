@@ -31,7 +31,7 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
             feasible = current_solution.isFeasible()
 
 
-        if feasible:
+        if feasible:            
             # If the solution is feasible and not visited, +1 point
             if current_solution.immutableDeployment() not in feasible_solutions:
                 feasible_solutions[current_solution.immutableDeployment()] = current_solution.objective()
@@ -64,12 +64,16 @@ def adaptiveSearch(problem_instance, oper, init, iter, segment, r, wobjective = 
             norm = sum(weights)
             weights = [weight / norm for weight in weights]
 
+            # Re-set scores and number of executions between segments
+            scores = [0 for _ in range(nopers)]
+            times_exe = [0 for _ in range(nopers)]
+
         #print("Current iteration: ", i, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
 
     return best_solution, best_objective
 
 # ALNS using temperature based acceptance criterion
-def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_ini = 6, alpha = 0.999, wobjective = (1, 1, 1)):
+def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_ini = 6.1, alpha = 0.9995, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
@@ -129,6 +133,10 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, T_
             
             norm = sum(weights)
             weights = [weight / norm for weight in weights]
+            
+            # Re-set scores and number of executions between segments
+            scores = [0 for _ in range(nopers)]
+            times_exe = [0 for _ in range(nopers)]
         
         temp = temp * alpha
         #print("Iteration: ", i, "-- Temperature: ", temp, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
