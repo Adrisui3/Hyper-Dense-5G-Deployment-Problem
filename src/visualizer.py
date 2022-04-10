@@ -1,6 +1,5 @@
 from deployment import Deployment
 from instance import Instance
-from instance_generator import InstanceGenerator
 import matplotlib.pyplot as plt
 
 class Visualizer:
@@ -9,27 +8,15 @@ class Visualizer:
         self.instance = instance
 
     def visualizeInstance(self):
-        users = self.instance.user_locations
-        candidates = self.instance.candidate_locations
+        # Plot polygon of interest
+        x_p, y_p = self.instance.polygon.exterior.xy
+        plt.plot(x_p, y_p)
 
-        x_u = [user[0] for user in users]
-        y_u = [user[1] for user in users]
+        for u in self.instance.user_locations:
+            plt.plot(u[0], u[1], marker = "^", markersize = "5", color = "green")
 
-        x_c = [candidate[0] for candidate in candidates]
-        y_c = [candidate[1] for candidate in candidates]
+        if self.deployment is None:
+            for c in self.instance.candidate_locations:
+                plt.plot(c[0], c[1], marker = "x", markersize = "10", color = "red")
 
-        if self.deployment:
-            nnull_cells = [idx for idx in range(self.instance.ncandidates) if self.deployment[idx] != 0]
-            for cell in self.instance.cells_ids:
-                indices = [idx for idx in nnull_cells if self.deployment[idx] == cell]
-                if not indices:
-                    continue
-                reach = self.instance.cells[cell][1]
-                x_d = [candidates[idx][0] for idx in indices]
-                y_d = [candidates[idx][1] for idx in indices]
-                # This still requires to be adjusted
-                plt.scatter(x_d, y_d, s = reach * 1000, alpha = 0.3)
-
-        plt.scatter(x = x_u, y = y_u, s=5, c = 'blue')
-        plt.scatter(x = x_c, y = y_c, s=7, marker='^', c = "red")
         plt.show()

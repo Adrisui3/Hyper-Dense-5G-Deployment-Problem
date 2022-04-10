@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import random
+from os.path import exists as file_exists
 import fastkml
 import shapely
 from shapely.ops import triangulate
@@ -140,8 +141,25 @@ class KMLParser:
         
         ncandidates = len(candidate_locations)
 
-        # Uniformly distribute nusers over the area of interest.
-        user_locations = self.__distributeUsers(polygon.geometry, nusers)
+        # To guarantee that all tests are run using the same datasets,
+        # corresponding users for each KML instance will be stored in a different file.
+        user_locations = []
+        ufile = file.replace(".kml", ".usr")
+        if file_exists(path + "users/" + ufile):
+            with open(path + "users/" + ufile, "r") as f:
+                uds = f.readlines()
+                line = 1
+                for _ in range(nusers):
+                    uloc = list(map(float, uds[line].split()))
+                    user_locations.append(tuple(uloc))
+                    line += 1
+        else:
+            user_locations = self.__distributeUsers(polygon.geometry, nusers)
+            with open(path + "users/" + ufile, "w") as f:
+                print("# User coordinates for KML file", file = f)
+                for u in user_locations:
+                    print(u[0], u[1], file = f)
+
 
         # Compute distance matrices
         dmatrix_users_candidates = [[] for _ in range(nusers)]
