@@ -6,13 +6,13 @@ import numpy as np
 import threading
 import os
 
-def simulatedAnnealing(problem_instance, oper, init, n_neighbors = 1, T_ini = 10, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealing(problem_instance, oper, init, t_ini, t_end, alpha, n_neighbors = 1, wobjective = (1, 1, 1)):
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
     best_solution = incumbent
     best_objective = best_solution.objective()
-    temp = T_ini
+    temp = t_ini
 
-    while temp > T_end:
+    while temp > t_end:
         for _ in range(n_neighbors):
             # Randomly selected operator to be applied
             current_solution = random.choices(oper, k = 1)[0](incumbent)
@@ -33,16 +33,16 @@ def simulatedAnnealing(problem_instance, oper, init, n_neighbors = 1, T_ini = 10
     
     return best_solution, best_objective
 
-def simulatedAnnealingTABU(problem_instance, oper, init, n_neighbors = 1, T_ini = 10, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealingCache(problem_instance, oper, init, t_ini, t_end, alpha, n_neighbors = 1, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
     best_solution = incumbent
     best_objective = best_solution.objective()
-    temp = T_ini
+    temp = t_ini
 
     feasible_solutions[best_solution.immutableDeployment()] = best_objective
-    while temp > T_end:
+    while temp > t_end:
         for _ in range(n_neighbors):
             # Randomly selected operator to be applied
             current_solution = random.choices(oper, k = 1)[0](incumbent)
@@ -112,7 +112,7 @@ def SAIteration(lock, thread_infeasible_solutions, thread_feasible_solutions, th
         if current_solution.immutableDeployment() not in thread_infeasible_solutions[idx]:
             thread_infeasible_solutions[idx].add(current_solution.immutableDeployment())
 
-def simulatedAnnealingParallel(problem_instance, oper, init, n_jobs = 1, T_ini = 10, T_end = 0.0001, alpha = 0.999, wobjective = (1, 1, 1)):
+def simulatedAnnealingParallel(problem_instance, oper, init, t_ini, t_end, alpha, n_jobs = 1, wobjective = (1, 1, 1)):
     
     # n_jobs threads will compute a neighbor solution of the incumbent in parallel.
     # Once finished, all neighbors will be compared and the best of them will be selected
@@ -136,8 +136,8 @@ def simulatedAnnealingParallel(problem_instance, oper, init, n_jobs = 1, T_ini =
     lock = threading.Lock()
     threads = []
     
-    temp = T_ini
-    while temp > T_end:
+    temp = t_ini
+    while temp > t_end:
         for ii in range(n_jobs):
             thread = threading.Thread(target = SAIteration, 
                                       args = (lock, thread_infeasible_solutions, thread_feasible_solutions, thread_incumbents, ii, temp, oper, best_solution, best_objective))
