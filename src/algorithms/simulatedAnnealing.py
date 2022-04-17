@@ -147,6 +147,7 @@ def simulatedAnnealingParallel(problem_instance, oper, init, t_ini, t_end, alpha
         for thread in threads:
             thread.join()
         
+        threads.clear()
         # Once finished, get the best found solution from the threads and set it as the next incumbent solution
         thread_costs = [thread_feasible_solutions[i][thread_incumbents[i].immutableDeployment()] for i in range(n_jobs)]
         best_incumbent_idx = thread_costs.index(max(thread_costs))
