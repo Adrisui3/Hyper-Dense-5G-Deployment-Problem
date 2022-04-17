@@ -86,18 +86,6 @@ if __name__ == "__main__":
 
     Pmin = 5%
     T_END = 0.0034
-
-    20000 eval for t_ini = 6.1, t_end = 0.0034
-    
-    1 thread
-    alpha = 0.99962545
-
-    4 threads
-    alpha = 0.9985024
-
-    8 threads
-    alpha = 0.997007
-
     '''
 
     T_INI = 6.1
@@ -140,6 +128,16 @@ if __name__ == "__main__":
     nruns = int(input("Number of runs: "))
     notes = input("Notes: ")
     
+    for alg in alg_selected:
+        date = str(datetime.datetime.now())
+        date = date.replace(" ", "--")
+        with open("results/" + alg + "/" + date, "a") as f:
+            print(" --- RESULTS --- ", file = f)
+            print("Dataset topology: ", ds_kind, file = f)
+            print("Runs per dataset: ", nruns, file = f)
+            print("Algorithm: ", alg, file = f)
+            print("Notes: ", notes, "\n", file = f)
+
     results = {}
     print("--- SIMULATION ---")
     for alg in alg_selected:
@@ -148,8 +146,13 @@ if __name__ == "__main__":
         for ds in ds_selected:
             print("     Current dataset: ", ds)
             print("     Evaluations: ", ITER[ds])
-            if "SA" in alg or alg == "ALNS-TP" or alg == "ALNS-TB":
-                print("     Alpha: ", ALPHAS[N_JOBS][ds])
+            if "SA" in alg:
+                if alg == "SA-C" or alg == "SA":
+                    print("     Alpha: ", ALPHAS[N_NEIGHBORS][ds])
+                else:
+                    print("     Alpha: ", ALPHAS[N_JOBS][ds])
+            elif alg == "ALNS-TP" or alg == "ALNS-TB":
+                print("     Alpha: ", ALPHAS_1T[ds])
 
             instance = Instance()
             if ds_kind != 3:
@@ -181,19 +184,10 @@ if __name__ == "__main__":
             split_res = list(map(np.mean, zip(*split_objectives)))
             results[ds] = [overall_sol, np.mean(objectives), np.std(objectives), split_res[0], split_res[1], split_res[2], np.mean(runtimes)]
 
-        date = str(datetime.datetime.now())
-        date = date.replace(" ", "--")
-        with open("results/" + alg + "/" + date, "w") as f:
-            print(" --- RESULTS --- ", file = f)
-            print("Dataset topology: ", ds_kind, file = f)
-            print("Runs per dataset: ", nruns, file = f)
-            print("Algorithm: ", alg, file = f)
-            #print("Parameters: ", parameters[alg], file = f)
-            print("Notes: ", notes, "\n", file = f)
-
-            for ds in ds_selected:
+            with open("results/" + alg + "/" + date, "a") as f:
                 print(ds, ":", results[ds][1:], file = f)
-            
+
+        with open("results/" + alg + "/" + date, "a") as f:
             print("\n--- BEST FOUND SOLUTIONS --- \n", file = f)
             for ds in ds_selected:
                 print(ds, ":", results[ds][0], file = f)
