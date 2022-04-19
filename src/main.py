@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     T_INI = 6.1
     T_END = 0.0034
-    N_JOBS = 4
+    N_JOBS = 8
     N_NEIGHBORS = 4
 
     ls_params = {"iter":ITER, "init":init_deployment, "oper":oper}
@@ -136,6 +136,18 @@ if __name__ == "__main__":
             print("Dataset topology: ", ds_kind, file = f)
             print("Runs per dataset: ", nruns, file = f)
             print("Algorithm: ", alg, file = f)
+            
+            if "SA" in alg:
+                print("t_ini: ", T_INI, file = f)
+                print("t_end: ", T_END, file = f)
+                if alg == "SA-P":
+                    print("n_jobs: ", N_JOBS, file = f)
+                else:
+                    print("n_neighbors: ", N_NEIGHBORS, file = f)
+            
+            if alg == "ALNS-TP" or alg == "ALNS-TB":
+                print("t_ini: ", T_INI, file = f)
+            
             print("Notes: ", notes, "\n", file = f)
 
     results = {}
@@ -155,10 +167,7 @@ if __name__ == "__main__":
                 print("     Alpha: ", ALPHAS_1T[ds])
 
             instance = Instance()
-            if ds_kind != 3:
-                instance.loadInstance(file = ds, path = path)
-            else:
-                instance.loadKML(path = path, file = ds)
+            instance.loadInstance(file = ds, path = path)
             
             objectives = []
             split_objectives = []

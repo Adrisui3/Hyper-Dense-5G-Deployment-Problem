@@ -32,7 +32,7 @@ class Instance:
         self.user_locations = user_locations
         self.candidate_locations = candidate_locations
 
-    def loadInstance(self, file, path):
+    def __loadFile(self, file, path):
         with open(path + file) as f:
             ds = f.readlines()
             line = 1
@@ -108,7 +108,7 @@ class Instance:
                 self.candidate_locations.append(tuple(cloc))
                 line += 1
     
-    def loadKML(self, path, file):
+    def __loadKML(self, file, path):
         kml = KMLParser().loadKML(path = path, file = file)
         
         self.polygon = kml["polygon"]
@@ -123,6 +123,12 @@ class Instance:
         self.dmatrix_candidates = kml["dmatrix_candidates"]
         self.user_locations = kml["user_locations"]
         self.candidate_locations = kml["candidate_locations"]
+    
+    def loadInstance(self, file, path):
+        if file.endswith(".kml"):
+            self.__loadKML(file = file, path = path)
+        else:
+            self.__loadFile(file = file, path = path)
 
     # If init is set to true, it will build the default solution provided by the instance.
     # Otherwise, it will generate an empty solution
