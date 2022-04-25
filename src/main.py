@@ -78,7 +78,7 @@ if __name__ == "__main__":
     AS_T_INI = 6.1
     SEGMENT = 350
     R = 0.05
-    BETA = 0.01
+    BETA = 0.15
 
     '''
     Pmax = 90%      // Pmax = 85%

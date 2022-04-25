@@ -218,6 +218,6 @@ def adaptiveSearchTABU(problem_instance, oper, init, iter, segment, r, t_ini, al
             times_exe = [0 for _ in range(nopers)]
         
         temp = temp * alpha
-        print("Iteration: ", i, "-- Temperature: ", temp, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
+        #print("Iteration: ", i, "-- Temperature: ", temp, "-- Current best: ", best_objective, " -- Weights: ", weights, " -- Sum: ", sum(weights))
 
     return best_solution, best_objective
