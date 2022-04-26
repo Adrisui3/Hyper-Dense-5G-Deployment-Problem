@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     T_INI = 6.1
     T_END = 0.0034
-    N_JOBS = 8
+    N_JOBS = 4
     N_NEIGHBORS = 4
 
     ls_params = {"iter":ITER, "init":init_deployment, "oper":oper}

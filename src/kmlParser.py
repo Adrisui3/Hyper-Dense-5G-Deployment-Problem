@@ -13,14 +13,22 @@ from shapely.ops import triangulate
     the polygon.
 '''
 
-class KMLParser:
-    
-    # Data related to cells is fixed for now, and it comes from the same paper as the model
-    # [id, cost, range, power]
-    cells = [[4, 175, 25, 50], [3, 25, 10, 10], [2, 5, 0.5, 1], [1, 1, 0.05, 0.25]]
-    
+class KMLParser:    
     # Earth radius in kilometers for conversion
     R = 6371
+    
+    def __init__(self, cells_file = "data/cells_default.txt"):
+        self.cells = self.__loadCells(file = cells_file)
+
+    def __loadCells(self, file):        
+        cells = []
+        with open(file = file) as f:
+            ds = f.readlines()
+            for line in range(len(ds)):
+                cdata = ds[line].split()
+                cells.append([int(cdata[0]), float(cdata[1]), float(cdata[2]), float(cdata[3])])
+
+        return cells
     
     def __distance(self, p1, p2):
         lon1 = np.radians(p1[0])

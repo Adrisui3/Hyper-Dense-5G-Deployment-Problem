@@ -7,17 +7,14 @@ from sklearn.datasets import make_blobs
 # Instance generator for the Hyper-Dense Deployment Problem.
 
 class InstanceGenerator:
-    
-    # Data related to cells is fixed for now, and it comes from the same paper as the model
-    # [id, cost, range, power]
-    cells = [[4, 175, 25, 50], [3, 25, 10, 10], [2, 5, 0.5, 1], [1, 1, 0.05, 0.25]]
 
     # If not specified, locations will be uniformly distributed over the AoI
-    def __init__(self, size, nusers, ncandidates, distrib = random.uniform):
+    def __init__(self, size, nusers, ncandidates, cells_file = "data/cells_default.txt", distrib = random.uniform):
         self.size = size
         self.nusers = nusers
         self.ncandidates = ncandidates
         self.distrib = distrib
+        self.cells = self.__loadCells(file = cells_file)
         self.macro_id = max([cell[0] for cell in self.cells])
     
     def __euclidean_distance(self, A, B):
@@ -32,6 +29,17 @@ class InstanceGenerator:
             users.append((x, y))
 
         return users
+    
+    def __loadCells(self, file):        
+        cells = []
+        with open(file = file) as f:
+            ds = f.readlines()
+            for line in range(len(ds)):
+                cdata = ds[line].split()
+                cells.append([int(cdata[0]), float(cdata[1]), float(cdata[2]), float(cdata[3])])
+
+        return cells
+
 
     def generateInstance(self, file, restrict = False, blobs = False, path = "data/", cluster_std = None, centers = None):
         candidate_locations = []
