@@ -2,6 +2,7 @@ from deployment import Deployment
 from instance import Instance
 import matplotlib.pyplot as plt
 import math
+import random
 
 class Visualizer:
     def __init__(self, deployment = None, instance = None):
@@ -9,13 +10,18 @@ class Visualizer:
         self.instance = instance
 
     def visualizeInstance(self):
+        # Fix aspect ratio
+        plt.gca().set_aspect('equal')
+        
         # Plot polygon of interest
         x_p, y_p = self.instance.polygon.exterior.xy
         plt.plot(x_p, y_p)
 
+        # Plot users
         for u in self.instance.user_locations:
             plt.plot(u[0], u[1], marker = "^", markersize = "5", color = "green")
 
+        # If there is a deployment, plot it
         if self.deployment is None:
             for c in self.instance.candidate_locations:
                 plt.plot(c[0], c[1], marker = "x", markersize = "10", color = "red")
@@ -30,11 +36,10 @@ class Visualizer:
                     continue
                 
                 radius = self.instance.cells[cell_id][1]
-                positions_x = [self.instance.candidate_locations[idx][0] for idx in cell_loc[cell_id]]
-                positions_y = [self.instance.candidate_locations[idx][1] for idx in cell_loc[cell_id]]
+                locations = [self.instance.candidate_locations[idx] for idx in cell_loc[cell_id]]
 
-                plt.scatter(x = positions_x, y = positions_y, s = (2*radius)**2, alpha = 0.5)
-
-
+                for c in locations:
+                    circle = plt.Circle(xy = (c[0], c[1]), radius = radius, alpha = 0.5)
+                    plt.gca().add_patch(circle)
 
         plt.show()

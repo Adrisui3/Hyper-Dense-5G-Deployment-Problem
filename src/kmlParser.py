@@ -36,6 +36,13 @@ class KMLParser:
         c = 2 * np.arcsin(np.sqrt(a))
 
         return c * self.R
+        
+        #return np.sqrt(pow(p1[0] - p2[0], 2) + pow(p2[1] - p1[1], 2))
+    
+    def __mercatorProjection(self, point):
+        x = math.radians(point[0]) * self.R
+        y = math.log(math.tan(math.pi / 4 + math.radians(point[1]) / 2)) * self.R
+        return (x, y)
     
     # For some reason, descriptions come enclosed in <div></div>
     def __extractDescription(self, desc):
@@ -114,10 +121,12 @@ class KMLParser:
         # Altitude will not be taken into account to simplify the model
         polygon_bounds = list(polygon.geometry.exterior.coords)
         polygon_bounds = [(point[0], point[1]) for point in polygon_bounds]
+        #polygon_bounds = [self.__mercatorProjection((point[0], point[1])) for point in polygon_bounds]
 
         cp_coords = [list(point.geometry.coords)[0] for point in candidate_placemarks]
         cp_coords = [(point[0], point[1]) for point in cp_coords]
-        
+        #cp_coords = [self.__mercatorProjection((point[0], point[1])) for point in cp_coords]
+
         # Rebuild geometries without altitude
         polygon.geometry = shapely.geometry.Polygon(polygon_bounds)
         for i in range(len(candidate_placemarks)):
@@ -179,7 +188,6 @@ class KMLParser:
         macro_id = max(cells_ids)
 
         init_deployment = [0 for _ in range(ncandidates)]
-
         return {"polygon":polygon.geometry, "cells":cells, "cells_ids":cells_ids, "macro_id":macro_id,
                 "init_deployment":init_deployment, "cell_compatibility":cell_compatibility,
                 "nusers":nusers, "ncandidates":ncandidates, "dmatrix_users_candidates":dmatrix_users_candidates,
