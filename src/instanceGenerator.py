@@ -24,8 +24,8 @@ class InstanceGenerator:
         users_r, _ = make_blobs(n_samples = self.nusers, n_features = 2, cluster_std = cluster_std, center_box=(0, self.size), centers = centers)
         users = []
         for user in users_r:
-            x = abs(user[0]) if user[0] <= self.size else self.size
-            y = abs(user[1]) if user[1] <= self.size else self.size
+            x = abs(user[0]) if user[0] <= self.size else abs(user[0]) - self.size
+            y = abs(user[1]) if user[1] <= self.size else abs(user[1]) - self.size
             users.append((x, y))
 
         return users
@@ -41,7 +41,7 @@ class InstanceGenerator:
         return cells
 
 
-    def generateInstance(self, file, restrict = False, blobs = False, path = "data/", cluster_std = None, centers = None):
+    def generateInstance(self, file, restrict = False, blobs = False, path = "data/", cluster_std = None, centers = 4):
         candidate_locations = []
         deployed_macros = []
         user_locations = []

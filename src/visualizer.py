@@ -5,6 +5,8 @@ import math
 import random
 
 class Visualizer:
+    colors = {4:'blue', 3:'green', 2:'red', 1:'yellow'}
+    
     def __init__(self, deployment = None, instance = None):
         self.deployment = deployment
         self.instance = instance
@@ -39,7 +41,7 @@ class Visualizer:
                 locations = [self.instance.candidate_locations[idx] for idx in cell_loc[cell_id]]
 
                 for c in locations:
-                    circle = plt.Circle(xy = (c[0], c[1]), radius = radius, alpha = 0.5)
+                    circle = plt.Circle(xy = (c[0], c[1]), radius = radius, alpha = 0.5, color = self.colors[cell_id])
                     plt.gca().add_patch(circle)
 
         plt.show()
