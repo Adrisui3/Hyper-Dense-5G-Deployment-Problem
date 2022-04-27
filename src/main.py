@@ -62,16 +62,16 @@ if __name__ == "__main__":
     init_deployment = True
     
     ITER = {"DS1_U":20000, "DS2_U":20000, "DS3_U":30000, "DS4_U":30000, 
-            "DS5_U":60000, "DS6_U":60000, "DS7_U":80000, "DS8_U":80000}
+            "DS5_U":40000, "DS6_U":40000, "DS7_U":50000, "DS8_U":50000}
 
     ALPHAS_1T = {"DS1_U":0.99962545, "DS2_U":0.99962545, "DS3_U":0.999750285, "DS4_U":0.999750285, 
-                 "DS5_U":0.999875135, "DS6_U":0.999875135, "DS7_U":0.99990635, "DS8_U":0.99990635}
+                 "DS5_U":0.99981271, "DS6_U":0.99981271, "DS7_U":0.999850163, "DS8_U":0.999850163}
 
     ALPHAS_4T = {"DS1_U":0.9985024, "DS2_U":0.9985024, "DS3_U":0.9990015, "DS4_U":0.9990015, 
-                 "DS5_U":0.99950064, "DS6_U":0.99950064, "DS7_U":0.99962544, "DS8_U":0.99962544}
+                 "DS5_U":0.999251, "DS6_U":0.999251, "DS7_U":0.99940076, "DS8_U":0.99940076}
     
     ALPHAS_8T = {"DS1_U":0.997007, "DS2_U":0.997007, "DS3_U":0.998004, "DS4_U":0.998004, 
-                 "DS5_U":0.9990015, "DS6_U":0.9990015, "DS7_U":0.999251, "DS8_U":0.999251}
+                 "DS5_U":0.9985024, "DS6_U":0.9985024, "DS7_U":0.9988018, "DS8_U":0.9988018}
 
     ALPHAS = {1:ALPHAS_1T, 4:ALPHAS_4T, 8:ALPHAS_8T}
 
@@ -128,9 +128,9 @@ if __name__ == "__main__":
     nruns = int(input("Number of runs: "))
     notes = input("Notes: ")
     
+    date = str(datetime.datetime.now())
+    date = date.replace(" ", "--")
     for alg in alg_selected:
-        date = str(datetime.datetime.now())
-        date = date.replace(" ", "--")
         with open("results/" + alg + "/" + date, "a") as f:
             print(" --- RESULTS --- ", file = f)
             print("Dataset topology: ", ds_kind, file = f)
@@ -195,8 +195,4 @@ if __name__ == "__main__":
 
             with open("results/" + alg + "/" + date, "a") as f:
                 print(ds, ":", results[ds][1:], file = f)
-
-        with open("results/" + alg + "/" + date, "a") as f:
-            print("\n--- BEST FOUND SOLUTIONS --- \n", file = f)
-            for ds in ds_selected:
-                print(ds, ":", results[ds][0], file = f)
+                print("     Best solution:", results[ds][0], "\n", file = f)

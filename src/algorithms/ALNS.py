@@ -4,6 +4,7 @@ from operators import *
 import random
 import numpy as np
 
+# ALNS threshold accepting
 def adaptiveSearchThreshold(problem_instance, oper, init, iter, segment, r, beta, wobjective = (1, 1, 1)):
     feasible_solutions = {}
     infeasible_solutions = set()
@@ -149,7 +150,6 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, t_
 
     return best_solution, best_objective
 
-# ALNS using temperature based acceptance criterion
 def adaptiveSearchTABU(problem_instance, oper, init, iter, segment, r, t_ini, alpha, wobjective = (1, 1, 1)):
     visited_solutions = set()
     incumbent = Deployment(instance = problem_instance, weights = wobjective, init = init)
