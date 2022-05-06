@@ -78,7 +78,7 @@ if __name__ == "__main__":
     AS_T_INI = 6.1
     SEGMENT = 350
     R = 0.05
-    BETA = 0.15
+    BETA = 0.20
 
     '''
     Pmax = 90%      // Pmax = 85%
@@ -90,8 +90,8 @@ if __name__ == "__main__":
 
     T_INI = 6.1
     T_END = 0.0034
-    N_JOBS = 4
-    N_NEIGHBORS = 4
+    N_JOBS = 8
+    N_NEIGHBORS = 8
 
     ls_params = {"iter":ITER, "init":init_deployment, "oper":oper}
     sa_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
