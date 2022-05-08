@@ -53,6 +53,10 @@ def algorithm(algorithm, dataset, parameters, instance):
             t_ini = time.time()
             best_solution, best_objective = adaptiveSearchTABU(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], iter = parameters["iter"][dataset], segment = parameters["segment"], r = parameters["r"], t_ini = parameters["t_ini"], alpha = parameters["alpha"][dataset])
             t_end = time.time()
+        case "COP-ALNS":
+            t_ini = time.time()
+            best_solution, best_objective = cooperativeALNS(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], n_jobs = parameters["n_jobs"], t_ini = parameters["t_ini"], t_end = parameters["t_end"], alpha = parameters["alpha"][parameters["n_jobs"]][dataset], segment = parameters["segment"], r = parameters["r"])
+            t_end = time.time()
 
     return best_solution, best_objective, t_end - t_ini
 
@@ -72,11 +76,15 @@ if __name__ == "__main__":
     
     ALPHAS_8T = {"DS1_U":0.997007, "DS2_U":0.997007, "DS3_U":0.998004, "DS4_U":0.998004, 
                  "DS5_U":0.9985024, "DS6_U":0.9985024, "DS7_U":0.9988018, "DS8_U":0.9988018}
+    
+    ALPHAS_COPALNS = {"DS1_U":0.74, "DS2_U":0.74, "DS3_U":0.82, "DS4_U":0.82, 
+                      "DS5_U":0.86, "DS6_U":0.86, "DS7_U":0.887, "DS8_U":0.887}
 
     ALPHAS = {1:ALPHAS_1T, 4:ALPHAS_4T, 8:ALPHAS_8T}
 
     AS_T_INI = 6.1
     SEGMENT = 350
+    SEGMENT_COPALNS = 100
     R = 0.05
     BETA = 0.20
 
@@ -100,7 +108,8 @@ if __name__ == "__main__":
     alnsth_params = {"iter":ITER, "segment":SEGMENT, "r":R, "init":init_deployment, "oper":oper, "beta":BETA}
     alnstp_params = {"iter":ITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "alpha":ALPHAS_1T, "init":init_deployment, "oper":oper}
     alnstb_params = {"iter":ITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "alpha":ALPHAS_1T, "init":init_deployment, "oper":oper}
-    parameters = {"LS":ls_params, "SA":sa_params, "SA-C":sac_params, "SA-P":sap_params, "ALNS-TH":alnsth_params, "ALNS-TP":alnstp_params, "ALNS-TB":alnstb_params, "init":init_deployment, "oper":oper}
+    coopalns_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper, "segment":SEGMENT_COPALNS, "r":R}
+    parameters = {"LS":ls_params, "SA":sa_params, "SA-C":sac_params, "SA-P":sap_params, "ALNS-TH":alnsth_params, "ALNS-TP":alnstp_params, "ALNS-TB":alnstb_params, "COP-ALNS":coopalns_params, "init":init_deployment, "oper":oper}
 
     paths_ds = ["data/uniform/", "data/blobs/", "data/kml/"]
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs, 3-KML): "))
@@ -120,7 +129,7 @@ if __name__ == "__main__":
     ds_selected = list(map(int, input("Selected datasets: ").split()))
     ds_selected = [datasets[i-1] for i in ds_selected]
     
-    algorithms = ["LS", "SA", "SA-C", "SA-P", "ALNS-TH", "ALNS-TP", "ALNS-TB"]
+    algorithms = ["LS", "SA", "SA-C", "SA-P", "ALNS-TH", "ALNS-TP", "ALNS-TB", "COP-ALNS"]
     print("Algorithms available:", ', '.join(algorithms))
     alg_selected = list(map(int, input("Selected algorithms: ").split()))
     alg_selected = [algorithms[i-1] for i in alg_selected]
@@ -148,6 +157,11 @@ if __name__ == "__main__":
             if alg == "ALNS-TP" or alg == "ALNS-TB":
                 print("t_ini: ", T_INI, file = f)
             
+            if alg == "COP-ALNS":
+                print("t_ini: ", T_INI, file = f)
+                print("t_end: ", T_END, file = f)
+                print("n_jobs: ", N_JOBS, file = f)
+            
             print("Notes: ", notes, "\n", file = f)
 
     results = {}
@@ -165,6 +179,8 @@ if __name__ == "__main__":
                     print("     Alpha: ", ALPHAS[N_JOBS][ds])
             elif alg == "ALNS-TP" or alg == "ALNS-TB":
                 print("     Alpha: ", ALPHAS_1T[ds])
+            elif alg == "COP-ALNS":
+                print("     Alpha: ", ALPHAS[N_JOBS][ds])
 
             instance = Instance()
             instance.loadInstance(file = ds, path = path)
