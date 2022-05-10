@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     AS_T_INI = 6.1
     SEGMENT = 350
-    SEGMENT_COPALNS = 100
+    SEGMENT_COPALNS = 350
     R = 0.05
     BETA = 0.20
 
