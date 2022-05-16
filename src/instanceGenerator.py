@@ -9,11 +9,11 @@ from sklearn.datasets import make_blobs
 class InstanceGenerator:
 
     # If not specified, locations will be uniformly distributed over the AoI
-    def __init__(self, size, nusers, ncandidates, cells_file = "data/cells_default.txt", distrib = random.uniform):
+    def __init__(self, size, nusers, ncandidates, cells_file = "data/cells_default.txt"):
         self.size = size
         self.nusers = nusers
         self.ncandidates = ncandidates
-        self.distrib = distrib
+        self.distrib = random.uniform
         self.cells = self.__loadCells(file = cells_file)
         self.macro_id = max([cell[0] for cell in self.cells])
     
