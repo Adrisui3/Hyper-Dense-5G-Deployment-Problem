@@ -1,8 +1,6 @@
 from deployment import Deployment
 from instance import Instance
 import matplotlib.pyplot as plt
-import math
-import random
 
 class Visualizer:
     colors = {4:'blue', 3:'green', 2:'red', 1:'yellow'}
@@ -12,6 +10,11 @@ class Visualizer:
         self.instance = instance
 
     def visualizeInstance(self):
+        
+        if self.instance.name.endswith(".kml") and (not self.deployment is None):
+            print("ERROR: deployment visualization is not yet supported for KML instances!")
+            exit()
+        
         # Fix aspect ratio
         plt.gca().set_aspect('equal')
         
@@ -22,7 +25,7 @@ class Visualizer:
         # Plot users
         for u in self.instance.user_locations:
             plt.plot(u[0], u[1], marker = "^", markersize = "5", color = "green")
-
+        
         # If there is a deployment, plot it
         if self.deployment is None:
             for c in self.instance.candidate_locations:

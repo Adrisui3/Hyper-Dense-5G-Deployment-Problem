@@ -1,6 +1,5 @@
 from instance import Instance
 from deployment import Deployment
-import copy
 import random
 
 def upgradeCells(current_solution):

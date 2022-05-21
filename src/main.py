@@ -12,14 +12,12 @@ import time
 import os
 import datetime
 
-
-
 # DISCLAIMER: This file is aimed for testing and it should not be used to generate solutions.
 # If you really want to solve a problem using these algorithms, I encourage you to
 # write your own framework. 
 #
 # On the other hand, this file will suffer changes almost every commit.
-# I do not recommend to follow those changes, since they will generaly be irrelevant
+# I do not recommend following those changes, since they will generaly be irrelevant
 # for the project.
 
 def algorithm(algorithm, dataset, parameters, instance):
@@ -168,7 +166,7 @@ if __name__ == "__main__":
     print("--- SIMULATION ---")
     for alg in alg_selected:
         print("Current algorithm: ", alg)
-                        
+        
         for ds in ds_selected:
             print("     Current dataset: ", ds)
             print("     Evaluations: ", ITER[ds])

@@ -5,7 +5,7 @@ import shapely.wkt
 class Instance:
     def __init__(self, polygon = None, cells = {}, cells_ids = None, macro_id = None, init_deployment = None, 
                 cell_compatibility = None, nusers = None, ncandidates = None, dmatrix_users_candidates = None, 
-                dmatrix_candidates = None, user_locations = None, candidate_locations = None):
+                dmatrix_candidates = None, user_locations = None, candidate_locations = None, name = None):
         
         # Area of interest
         self.polygon = polygon
@@ -31,6 +31,9 @@ class Instance:
         # Coordinates
         self.user_locations = user_locations
         self.candidate_locations = candidate_locations
+
+        # Name of the instance
+        self.name = name
 
     def __loadFile(self, file, path):
         with open(path + file) as f:
@@ -125,6 +128,7 @@ class Instance:
         self.candidate_locations = kml["candidate_locations"]
     
     def loadInstance(self, file, path):
+        self.name = file
         if file.endswith(".kml"):
             self.__loadKML(file = file, path = path)
         else:
