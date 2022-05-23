@@ -180,6 +180,20 @@ class Deployment:
     
     def getNullCells(self):
         return [i for i in range(self.__instance.ncandidates) if self.__deployment[i] == 0]
+    
+    def getMaxInterferences(self):
+        return self.__max_interferences
+    
+    def getMaxCost(self):
+        return self.__max_cost
+    
+    def getCellCount(self):
+        count = {}
+        for cell in self.__instance.cells_ids:
+            count[cell] = self.__deployment.count(cell)
+        count[0] = self.__deployment.count(0)
+
+        return count
 
     def test(self):
         print("--- DEPLOYMENT SUMMARY ---")
