@@ -35,9 +35,9 @@ def algorithm(algorithm, dataset, parameters, instance):
             t_ini = time.time()
             best_solution, best_objective = simulatedAnnealingCache(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], t_ini = parameters["t_ini"], t_end = parameters["t_end"], alpha = parameters["alpha"][parameters["n_neighbors"]][dataset], n_neighbors = parameters["n_neighbors"])
             t_end = time.time()
-        case "SA-P":
+        case "COP-SA":
             t_ini = time.time()
-            best_solution, best_objective = simulatedAnnealingParallel(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], t_ini = parameters["t_ini"], t_end = parameters["t_end"], alpha = parameters["alpha"][parameters["n_jobs"]][dataset], n_jobs = parameters["n_jobs"])
+            best_solution, best_objective = cooperativeSimulatedAnnealing(problem_instance = instance, oper = parameters["oper"], init = parameters["init"], t_ini = parameters["t_ini"], t_end = parameters["t_end"], alpha = parameters["alpha"][parameters["n_jobs"]][dataset], n_jobs = parameters["n_jobs"])
             t_end = time.time()
         case "ALNS-TH":
             t_ini = time.time()
@@ -102,12 +102,12 @@ if __name__ == "__main__":
     ls_params = {"iter":ITER, "init":init_deployment, "oper":oper}
     sa_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
     sac_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_neighbors":N_NEIGHBORS, "init":init_deployment, "oper":oper}
-    sap_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper}
+    copsa_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper}
     alnsth_params = {"iter":ITER, "segment":SEGMENT, "r":R, "init":init_deployment, "oper":oper, "beta":BETA}
     alnstp_params = {"iter":ITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "alpha":ALPHAS_1T, "init":init_deployment, "oper":oper}
     alnstb_params = {"iter":ITER, "segment":SEGMENT, "r":R, "t_ini":AS_T_INI, "alpha":ALPHAS_1T, "init":init_deployment, "oper":oper}
     coopalns_params = {"t_ini":T_INI, "t_end":T_END, "alpha":ALPHAS, "n_jobs":N_JOBS, "init":init_deployment, "oper":oper, "segment":SEGMENT_COPALNS, "r":R}
-    parameters = {"LS":ls_params, "SA":sa_params, "SA-C":sac_params, "SA-P":sap_params, "ALNS-TH":alnsth_params, "ALNS-TP":alnstp_params, "ALNS-TB":alnstb_params, "COP-ALNS":coopalns_params, "init":init_deployment, "oper":oper}
+    parameters = {"LS":ls_params, "SA":sa_params, "SA-C":sac_params, "COP-SA":copsa_params, "ALNS-TH":alnsth_params, "ALNS-TP":alnstp_params, "ALNS-TB":alnstb_params, "COP-ALNS":coopalns_params, "init":init_deployment, "oper":oper}
 
     paths_ds = ["data/uniform/", "data/blobs/", "data/kml/"]
     ds_kind = int(input("Dataset topology (1-uniform, 2-blobs, 3-KML): "))
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     ds_selected = list(map(int, input("Selected datasets: ").split()))
     ds_selected = [datasets[i-1] for i in ds_selected]
     
-    algorithms = ["LS", "SA", "SA-C", "SA-P", "ALNS-TH", "ALNS-TP", "ALNS-TB", "COP-ALNS"]
+    algorithms = ["LS", "SA", "SA-C", "COP-SA", "ALNS-TH", "ALNS-TP", "ALNS-TB", "COP-ALNS"]
     print("Algorithms available:", ', '.join(algorithms))
     alg_selected = list(map(int, input("Selected algorithms: ").split()))
     alg_selected = [algorithms[i-1] for i in alg_selected]
@@ -147,7 +147,7 @@ if __name__ == "__main__":
             if "SA" in alg:
                 print("t_ini: ", T_INI, file = f)
                 print("t_end: ", T_END, file = f)
-                if alg == "SA-P":
+                if alg == "COP-SA":
                     print("n_jobs: ", N_JOBS, file = f)
                 else:
                     print("n_neighbors: ", N_NEIGHBORS, file = f)

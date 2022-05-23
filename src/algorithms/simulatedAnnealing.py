@@ -112,7 +112,7 @@ def SAIteration(lock, thread_infeasible_solutions, thread_feasible_solutions, th
         if current_solution.immutableDeployment() not in thread_infeasible_solutions[idx]:
             thread_infeasible_solutions[idx].add(current_solution.immutableDeployment())
 
-def simulatedAnnealingParallel(problem_instance, oper, init, t_ini, t_end, alpha, n_jobs = 1, wobjective = (1, 1, 1)):
+def cooperativeSimulatedAnnealing(problem_instance, oper, init, t_ini, t_end, alpha, n_jobs = 1, wobjective = (1, 1, 1)):
     
     # n_jobs threads will compute a neighbor solution of the incumbent in parallel.
     # Once finished, all neighbors will be compared and the best of them will be selected

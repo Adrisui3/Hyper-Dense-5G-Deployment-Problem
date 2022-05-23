@@ -195,7 +195,7 @@ class Deployment:
 
         return count
 
-    def test(self):
+    def getSummary(self):
         print("--- DEPLOYMENT SUMMARY ---")
         print("Coverage: ", self.coverage())
         print("Cost: ", self.cost())
