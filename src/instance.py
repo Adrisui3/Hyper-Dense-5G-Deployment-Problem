@@ -111,8 +111,8 @@ class Instance:
                 self.candidate_locations.append(tuple(cloc))
                 line += 1
     
-    def __loadKML(self, file, path):
-        kml = KMLParser().loadKML(path = path, file = file)
+    def __loadKML(self, file, path, cells_file):
+        kml = KMLParser(cells_file=cells_file).loadKML(path = path, file = file)
         
         self.polygon = kml["polygon"]
         self.cells = kml["cells"]
@@ -127,10 +127,10 @@ class Instance:
         self.user_locations = kml["user_locations"]
         self.candidate_locations = kml["candidate_locations"]
     
-    def loadInstance(self, file, path):
+    def loadInstance(self, file, path, cells_file = "data/cells_default.txt"):
         self.name = file
         if file.endswith(".kml"):
-            self.__loadKML(file = file, path = path)
+            self.__loadKML(file = file, path = path, cells_file=cells_file)
         else:
             self.__loadFile(file = file, path = path)
 

@@ -54,7 +54,7 @@ class KMLParser:
     
     # For some reason, descriptions come enclosed in <div></div>
     def __extractDescription(self, desc):
-        return desc.replace("<div>", "").replace("</div>", "")
+        return desc.replace("<div>", "").replace("</div>", "").replace("<br>", "")
     
     def __extractUsers(self, polygon_pm):
         return int(self.__extractDescription(polygon_pm.description))
