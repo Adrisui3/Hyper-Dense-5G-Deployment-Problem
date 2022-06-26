@@ -349,7 +349,7 @@ def cooperativeALNS(problem_instance, oper, init, t_ini, t_end, alpha, segment, 
         # Share best found solution between threads
         thread_incumbents = [thread_incumbents[best_incumbent_idx].copy() for _ in range(n_jobs)]
 
-        # Share adquired knowledge of operators' performance between threads
+        # Share acquired knowledge of operators' performance between threads
         thread_weights = [thread_weights[best_incumbent_idx].copy() for _ in range(n_jobs)]
         
         #print("Temperature:", thread_temps[0], "-- Current best: ", best_objective[0])
