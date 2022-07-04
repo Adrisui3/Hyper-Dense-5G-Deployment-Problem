@@ -20,7 +20,7 @@ def adaptiveSearchThreshold(problem_instance, oper, init, iter, segment, r, beta
 
     feasible_solutions[best_solution.immutableDeployment()] = best_objective
     for i in range(iter):
-        # Randomly selected operator to be applied
+        # Select operator according to weights
         oper_idx = random.choices(range(nopers), weights = weights, k = 1)[0]
         current_solution = oper[oper_idx](incumbent)
         times_exe[oper_idx] += 1
@@ -93,7 +93,7 @@ def adaptiveSearchTemperature(problem_instance, oper, init, iter, segment, r, t_
 
     feasible_solutions[best_solution.immutableDeployment()] = best_objective
     for i in range(iter):
-        # Randomly selected operator to be applied
+        # Select operator according to weights
         oper_idx = random.choices(range(nopers), weights = weights, k = 1)[0]
         current_solution = oper[oper_idx](incumbent)
         times_exe[oper_idx] += 1
@@ -164,7 +164,7 @@ def adaptiveSearchTABU(problem_instance, oper, init, iter, segment, r, t_ini, al
     scores = [0 for _ in range(nopers)]
     times_exe = [0 for _ in range(nopers)]
     for i in range(iter):
-        # Randomly selected operator to be applied
+        # Select operator according to weights
         oper_idx = random.choices(range(nopers), weights = weights, k = 1)[0]
         current_solution = oper[oper_idx](incumbent)
         
@@ -238,7 +238,7 @@ def coALNSIter(lock, thread_infeasible_solutions, thread_feasible_solutions, thr
         #print("     Scores: ", scores)
         #print("     Call counter: ", times_exe)
         
-        # Select operator based on weights        
+        # Select operator according to weights      
         oper_idx = random.choices(range(nopers), weights = thread_weights[idx], k = 1)[0]
         current_solution = oper[oper_idx](thread_incumbents[idx])
         times_exe[oper_idx] += 1

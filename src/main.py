@@ -12,6 +12,8 @@ import time
 import os
 import datetime
 
+# DISCLAIMER: This file is only intended for demoing purposes, thus it will contain bad coding practices!
+
 def algorithm(algorithm, parameters, instance, oper):
 
     match algorithm:

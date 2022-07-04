@@ -112,7 +112,7 @@ class Instance:
                 line += 1
     
     def __loadKML(self, file, path, cells_file):
-        kml = KMLParser(cells_file=cells_file).loadKML(path = path, file = file)
+        kml = KMLParser().loadKML(path = path, file = file, cells_file = cells_file)
         
         self.polygon = kml["polygon"]
         self.cells = kml["cells"]

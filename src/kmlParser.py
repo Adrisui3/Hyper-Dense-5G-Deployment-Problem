@@ -7,7 +7,7 @@ import shapely
 from shapely.ops import triangulate
 
 '''
-    KML files are built using Google Earth.
+    KML files are built using Google Earth, among others.
     Each file must contain a polygon representing the area of interest.
     All candidate locations, represented by placemarks, must be inside
     the polygon.
@@ -16,9 +16,6 @@ from shapely.ops import triangulate
 class KMLParser:    
     # Earth radius in kilometers for conversion
     R = 6371
-    
-    def __init__(self, cells_file = "data/cells_default.txt"):
-        self.cells = self.__loadCells(file = cells_file)
 
     def __loadCells(self, file):        
         cells = []
@@ -95,7 +92,7 @@ class KMLParser:
         return user_locations
     
     # Read a KML file and return its content in a dictionary used to initialize an Instance object
-    def loadKML(self, path, file):
+    def loadKML(self, path, file, cells_file = "data/cells_default.txt"):
         # KML string loading
         with open(path + file, 'rt', encoding="utf-8") as kml_doc:
             ds_string = kml_doc.read().encode()
@@ -143,9 +140,12 @@ class KMLParser:
         # Extract number of users from AoI description
         nusers = self.__extractUsers(polygon)
         
+        # Load cells
+        cells = self.__loadCells(file = cells_file)
+
         # For every candidate placemark, extract compatible cell kinds from description box
         # and build compatibility dictionary
-        cell_compatibility = {cell[0]:set() for cell in self.cells}
+        cell_compatibility = {cell[0]:set() for cell in cells}
         for i in range(len(candidate_placemarks)):
             c_cells = self.__extractCompatibleCells(candidate_placemarks[i])
             for cell in c_cells:
@@ -191,7 +191,7 @@ class KMLParser:
                 dist = 0 if i == j else self.__distance(candidate_locations[i], candidate_locations[j])
                 dmatrix_candidates[i].append(dist)
         
-        cells = {cell[0]:cell[1:] for cell in self.cells}
+        cells = {cell[0]:cell[1:] for cell in cells}
         cells_ids = cells.keys()
         macro_id = max(cells_ids)
 
